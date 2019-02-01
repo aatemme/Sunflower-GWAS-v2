@@ -53,6 +53,14 @@ if (!require("RColorBrewer")) {
 
 library(tools)
 
+
+#### getting this script working without burrit wrapper
+
+envs<-as.character(read.table("Environments.list")[,1])
+traits<-as.character(read.table("Traits.list")[,1])
+
+
+
 #########################################################
 ### Read and prepare files
 #########################################################
@@ -62,12 +70,12 @@ library(tools)
 ##########################################################33
 # config = read.table(file="Asada.config")
 
-trait = config[1,1]
+trait = traits[1]
+envNames <- envs[1]
+envFiles <- paste(trait,"_",envNames,".txt",sep="")
 num_env <-1
 num_rep <-1
 prefix <- "XRQ_264"
-envNames = c(as.character(config[5,1]))
-envFiles = c(as.character(config[6,1]))
 # color1 = as.character(config[7,1])
 # color2 = as.character(config[8,1])
 model <- "K" #can also run with fastSTRUCTURE groups
@@ -76,43 +84,46 @@ comparison_name = envNames[1]
 #########read phenotypes and split to have data frame for each env and rep:
 
 op <- options(stringsAsFactors=FALSE)
-sam<-read.table(paste(prefix,".tfam",sep=""))
+sam<-read.table("Software/Genomics data/XRQ_264.tfam")
 SAM<-sam[,1]
 options(op)
 
 #########################################################
 ### Association
 #########################################################
-num_env<-as.numeric(as.character(num_env))
-num_rep<-as.numeric(as.character(num_rep))
+# num_env<-as.numeric(as.character(num_env))
+# num_rep<-as.numeric(as.character(num_rep))
 # print(num_env)
 # print(num_rep)
 
-for(i in 1:num_env) {
-cat ("\n..................Preparing the Pheno Files.............\n")
-Pheno_in<-read.table(envFiles[i],header=TRUE)
+
+
+Pheno_in<-read.table(paste("Phenotype data/",envFiles[1],sep=""),header=TRUE)
+
 Pheno_in[Pheno_in=="Na"]<-"NA"
+
 PhenFile<-merge(SAM, Pheno_in, by.x=1,by.y=1,all.x=TRUE)
-for(j in 1:num_rep) {
+
+
 	options(op)
-	write.table(data.frame(PhenFile[,1],PhenFile[,1], PhenFile[,j+1]),paste(trait,"_",envNames[i],".pheno",sep=""),row.names = FALSE,col.names = FALSE, quote = FALSE)
-	if (model == "K" || model == "k"){;
+	write.table(data.frame(PhenFile[,1],PhenFile[,1], PhenFile[,2]),paste("Software/Temporary files/",trait,"_",envNames[1],".pheno",sep=""),row.names = FALSE,col.names = FALSE, quote = FALSE)
+	# if (model == "K" || model == "k"){;
 	  print ("P+K")
-	  EMMAX.pk<-paste("./bin/emmax-intel64 -v -d 10 -t ",prefix, " -p ", paste(trait,"_",envNames[i],".pheno",sep=""), " -c ", paste(prefix,".PCA_EV",sep=""), " -k ", paste(prefix,".aIBS.kinf",sep=""), " -o ", paste(trait,"_",envNames[i],sep=""), sep="")
+	  EMMAX.pk<-paste("./Software/emmax-intel64 -v -d 10 -t ",prefix, " -p ", paste("./Software/",trait,"_",envNames[1],".pheno",sep=""), " -c ", paste("./Software/",prefix,".PCA_EV",sep=""), " -k ", paste("./Software/",prefix,".aIBS.kinf",sep=""), " -o ", paste(trait,"_",envNames[1],sep=""), sep="")
 	  system (EMMAX.pk)
-	}else {
-	print ("Q+K model being run")
-	EMMAX.env1<-paste("./bin/emmax-intel64 -v -d 10 -t ",
-	                  prefix, 
-	                  " -p ",
-	                  paste(trait,"_",envNames[i],".pheno",sep=""),
-	                  " -c FS_K5.structure",
-	                  " -k ", paste(prefix,".aIBS.kinf",sep=""),
-	                  " -o ", paste(trait,"_",envNames[i],sep=""), sep="")
+	# }else {
+	# print ("Q+K model being run")
+	# EMMAX.env1<-paste("./bin/emmax-intel64 -v -d 10 -t ",
+	#                   prefix, 
+	#                   " -p ",
+	#                   paste(trait,"_",envNames[i],".pheno",sep=""),
+	#                   " -c FS_K5.structure",
+	#                   " -k ", paste(prefix,".aIBS.kinf",sep=""),
+	#                   " -o ", paste(trait,"_",envNames[i],sep=""), sep="")
 	system (EMMAX.env1)
-  }
-  }
-}
+
+  
+
 
 cat ("Reading the map.......................")
 snp.map = read.table(file="XRQ_264.map",header= T) 
