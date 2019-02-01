@@ -39,4 +39,4 @@ rsconnect/
 *.jpeg
 *.pdf
 *.jpg
-#/Phenotype data/*
+/Phenotype data/*
