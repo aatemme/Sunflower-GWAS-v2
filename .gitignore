@@ -40,3 +40,6 @@ rsconnect/
 *.pdf
 *.jpg
 /Phenotype data/*
+
+# file types created for and during GWAS
+*.sigsnps
