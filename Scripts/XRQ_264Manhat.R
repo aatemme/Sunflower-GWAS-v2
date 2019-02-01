@@ -10,7 +10,7 @@
 # It treats traits and environments individually, and produces a Manhattan plot & list of significant SNPs.
 # EMMAX is run with kinship and structure (PCA) to get associations
 #
-# Preferences are controlled in the configuration file ("Asada.config")
+# 
 #
 #########################################################
 ### Installing and loading required packages
@@ -57,20 +57,20 @@ library(tools)
 ### Read and prepare files
 #########################################################
 
-setwd("/home/atemme/Desktop/Seedmorph/EnchiladaSuite/Burrito") ##### change this to match your path to Enchilada
+# setwd("/home/atemme/Desktop/Seedmorph/EnchiladaSuite/Burrito") ##### change this to match your path to Enchilada
 
 ##########################################################33
-config = read.table(file="Asada.config")
+# config = read.table(file="Asada.config")
 
 trait = config[1,1]
-num_env = config[2,1]
-num_rep = config[3,1]
-prefix = config[4,1]
+num_env <-1
+num_rep <-1
+prefix <- "XRQ_264"
 envNames = c(as.character(config[5,1]))
 envFiles = c(as.character(config[6,1]))
-color1 = as.character(config[7,1])
-color2 = as.character(config[8,1])
-model = config[9,1]
+# color1 = as.character(config[7,1])
+# color2 = as.character(config[8,1])
+model <- "K" #can also run with fastSTRUCTURE groups
 comparison_name = envNames[1] 
 
 #########read phenotypes and split to have data frame for each env and rep:
@@ -85,8 +85,8 @@ options(op)
 #########################################################
 num_env<-as.numeric(as.character(num_env))
 num_rep<-as.numeric(as.character(num_rep))
-print(num_env)
-print(num_rep)
+# print(num_env)
+# print(num_rep)
 
 for(i in 1:num_env) {
 cat ("\n..................Preparing the Pheno Files.............\n")
