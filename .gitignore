@@ -44,3 +44,7 @@ rsconnect/
 
 # file types created for and during GWAS
 *.sigsnps
+*.ps
+*.log
+*.reml
+*.pheno
