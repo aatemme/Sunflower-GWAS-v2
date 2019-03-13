@@ -24,8 +24,10 @@ q<-1
 
 for (i in 1:length(traits)){
   
-  pdf(paste("Plots/",traits[i],"_ManhattanPlot.pdf",sep=""),height=8.5,width=11)
-  par(mfcol=c(ceiling(length(envs)/2),1),oma = c(0, 0, 0, 0))
+  pdf(paste("Plots/Manhattans/",traits[i],"_ManhattanPlot.pdf",sep=""),height=8.5,width=11)
+  
+  if(length(envs)<3){par(mfcol=c(ceiling(length(envs)/2),1),oma = c(0, 0, 0, 0))}
+              else  {par(mfcol=c(ceiling(length(envs)/2),2),oma = c(0, 0, 0, 0))} ## plot in two columns if more than 2 environments
   
   for (q in 1:length(envs)){
     
