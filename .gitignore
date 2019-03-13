@@ -41,6 +41,9 @@ rsconnect/
 *.jpg
 /Phenotype data/*
 /Software/*
+/Tables/Bins/*.csv
+/Tables/Genes/*.csv
+/Tables/Genes/*.txt
 
 # file types created for and during GWAS
 *.sigsnps
