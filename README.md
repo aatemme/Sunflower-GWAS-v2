@@ -10,6 +10,6 @@ Enchillada 2.0 adds:
 - Colocalization visualization
 - Identification of unique LD blocks
 
-More info to follow as this pipeline is brought into standalone working order
+UPDATE 2019/03/14: Seems to stably work. Needs software data from separate location though
 
 
