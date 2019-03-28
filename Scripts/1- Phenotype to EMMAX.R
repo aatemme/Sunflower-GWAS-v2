@@ -34,6 +34,9 @@ for (q in 1:length(envs)) {
 Pheno_in<-read.table(paste("Phenotype data/",datafile,sep=""),header=TRUE)
 
 Pheno_in[Pheno_in=="Na"]<-"NA"
+Pheno_in[Pheno_in=="NaN"]<-"NA"
+Pheno_in[Pheno_in=="Inf"]<-"NA"
+Pheno_in[Pheno_in=="-Inf"]<-"NA"
 
 PhenFile<-Pheno_in[Pheno_in$Line%in%SAM,] ### limit phenotypic data to just the genotypes in the SNP set
 

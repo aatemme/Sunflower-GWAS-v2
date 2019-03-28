@@ -44,6 +44,7 @@ for (i in 1:length(traits)){
       tmpcutoff <- as.data.frame(quantile(ps1$V4,as.numeric(as.character(suggthresh))))[1,1]
       
       label<-paste(traits[i],envs[q])
+      print(label)
 
       if (length(ps1[ps1$V4<0.01,]$V4)<1) {plot(10:1)  ## draw empty plot if no snips are above minimum plotting threshold, plot fails otherwise
       }else { 
