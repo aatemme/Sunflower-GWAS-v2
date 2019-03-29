@@ -1,4 +1,3 @@
-Dry
-Wet
-RDPI
-logdif
+salt
+water
+logdiff

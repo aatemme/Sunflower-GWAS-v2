@@ -51,3 +51,5 @@ rsconnect/
 *.log
 *.reml
 *.pheno
+*.log.txt
+*.assoc.txt
