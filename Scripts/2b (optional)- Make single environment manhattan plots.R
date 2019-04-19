@@ -45,10 +45,10 @@ for (i in 1:length(traits)){
     label<-paste(traits[i],envs[q])
     print(label)
     
-    if (length(ps1[ps1$p_wald<0.01,]$p_wald)<1) {plot(10:1)  ## draw empty plot if no snips are above minimum plotting threshold, plot fails otherwise
+    if (length(ps1[ps1$p_wald<0.1,]$p_wald)<1) {plot(10:1)  ## draw empty plot if no snips are above minimum plotting threshold, plot fails otherwise
     }else { 
-      manhattan(ps1[ps1$p_wald<0.01,],chr = "Chr_num", bp = "ps", p = "p_wald", snp = "rs",col=brewer.pal(8,"Dark2")[c(1,8)],
-                suggestiveline = -log10(tmpcutoff),genomewideline=-log10(0.05/(31733+15809)), cex=0.5, cex.axis=0.8,ylim=c(2,ytop),
+      manhattan(ps1[ps1$p_wald<0.1,],chr = "Chr_num", bp = "ps", p = "p_wald", snp = "rs",col=brewer.pal(8,"Dark2")[c(1,8)],
+                suggestiveline = -log10(tmpcutoff),genomewideline=-log10(0.05/(31733+15809)), cex=0.5, cex.axis=0.8,ylim=c(1,ytop),
                 mtext(label, side = 3, line = 0))
     }
   
