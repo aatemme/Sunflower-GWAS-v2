@@ -1,6 +1,7 @@
 library(RColorBrewer)
 library(ggpubr)
 library(tidyverse)
+library(grid)
 source("Scripts/traits to haplotype blocks.R")
 source("Scripts/3b- Combine snips over traits and envs.R")
 
@@ -47,6 +48,16 @@ sig.list$hapID<-NULL
 sig.list$hapID<-big.list$hapID[match(sig.list$SNP,big.list$SNP)]
 
 
+sighap_to_genomehap<-data.frame(genome.hap=unique(sig.list$hapID))
+sighap_to_genomehap$sig.hap<-sig.list$sigblock_hapID[match(sighap_to_genomehap$genome.hap,sig.list$hapID)]
+
+
+### save some of the blocks objects for later
+write.table<-write.table(sig.blocks, "Tables/Blocks/traits_to_genomeblocks_signif.txt", sep="\t", row.names=F, col.names=T)
+write.table<-write.table(sug.blocks, "Tables/Blocks/traits_to_genomeblocks_sugest.txt", sep="\t", row.names=F, col.names=T)
+write.table<-write.table(sig.list, "Tables/Blocks/sigsnips_to_genomeblocks.txt", sep="\t", row.names=F, col.names=T)
+write.table<-write.table(sighap_to_genomehap, "Tables/Blocks/condensed_genome_blocks.txt", sep="\t", row.names=F, col.names=T)
+
 #### calculate LD (D prime) for significant snps
 system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --r2 dprime yes-really --ld-window-kb 2000000 --ld-window-r2 0.0 --ld-window 1000 --out Tables/Blocks/ldtable --allow-extra-chr")
 
@@ -55,8 +66,7 @@ ld.table<-fread("Tables/Blocks/ldtable.ld")
 
 ### plot new blocks and ld
 
-i<-1
-
+for (i in 1:17) {
 chrom<-ld.table[ld.table$CHR_A==paste("Ha412HOChr",formatC(i,width=2,flag="0"), sep=""),]
 
 chrom.snps<-unique(c(as.character(chrom$BP_A),as.character(chrom$BP_B)))
@@ -78,54 +88,101 @@ plot<-ggplot(data=chrom,aes(y=bp_A, x=bp_B,fill=R2))+geom_tile()+scale_fill_grad
 
 
 ## get blocks info for the snps
-
 chrom.blocks<-data.frame(bp=unique(chrom$BP_A))
 chrom.blocks$SNP<-paste("Ha412HOChr",formatC(i,width=2,flag="0"),":",chrom.blocks$bp, sep="")
+chrom.blocks$big.hap<-fct_inorder(sig.list$hapID[match(chrom.blocks$SNP,sig.list$SNP)])
+chrom.blocks$sig.hap<-fct_inorder(sig.list$sigblock_hapID[match(chrom.blocks$SNP,sig.list$SNP)])
 
+#### add block info to the ld plot
+colours<-rep(c(brewer.pal(8,"Dark2"))[-7],100)
+chrom.blocks$big.hap.colors<-colours[as.numeric(chrom.blocks$big.hap)]
+chrom.blocks$sig.hap.colors<-colours[as.numeric(chrom.blocks$sig.hap)]
 
+a<-0.2*(length(chrom.blocks$SNP)/10)*sin(45*pi/180)
+b<-0.2*(length(chrom.blocks$SNP)/10)*cos(45*pi/180)
+c<-0.5*(length(chrom.blocks$SNP)/10)*sin(45*pi/180)
+d<-0.5*(length(chrom.blocks$SNP)/10)*cos(45*pi/180)
+
+xbase<-c(rep(c(0:(length(chrom.blocks$SNP)-1)),each=4))+c(0.5,0.5,1.5,1.5)
+x.adjust<-c(-b,-b-d,-b-d,-b)
+x2.adjust<-c(-b-d,-b-d-d,-b-d-d,-b-d)
+
+ybase<-c(rep(c(0:(length(chrom.blocks$SNP)-1)),each=4))+c(0.5,0.5,1.5,1.5)
+y.adjust<-c(a,a+c,a+c,a)
+y2.adjust<-c(a+c,a+c+c,a+c+c,a+c)
 
 xs<-xbase+x.adjust
+xs2<-xbase+x2.adjust
+
 ys<-ybase+y.adjust
-group<-c(rep(c("one"), each=4))
+ys2<-ybase+y2.adjust
+group<-c(rep(c(0:(length(chrom.blocks$SNP)-1)),each=4))
 
-data<-data.frame(xs,ys,group)
+big.hap<-data.frame(xs,ys,group)
+sig.hap<-data.frame(xs2,ys2,group)
 
-a<-0.2*sin(45*pi/180)
-b<-0.2*cos(45*pi/180)
-c<-0.5*sin(45*pi/180)
-d<-0.5*cos(45*pi/180)
+hap.plot<-plot+geom_polygon(data=big.hap,aes(x=xs,y=ys,group=group),fill=rep(chrom.blocks$big.hap.colors,each=4))+
+      geom_polygon(data=sig.hap,aes(x=xs2,y=ys2,group=group),fill=rep(chrom.blocks$sig.hap.colors,each=4))+
+  geom_segment(x=xs2[1],y=ys2[1],xend=xs2[length(xs2)],yend=ys2[length(ys2)],col="black")+
+coord_fixed(xlim=c(0.5,(length(chrom.blocks$SNP)+0.5)*1.05),ylim=c(0.5-(length(chrom.blocks$SNP)+0.5)*0.05,length(chrom.blocks$SNP)+0.5),clip="off",expand=0)+
+  theme(legend.position="none")+
+  annotate("text", x=xs[1],y=ys[1],label="Genome ", angle=45,hjust=1,vjust=0)+
+  annotate("text", x=xs2[1],y=ys2[1],label="Significant ", angle=45,hjust=1,vjust=0)
 
-xbase<-c(0.5,0.5,1.5,1.5)
-x.adjust<-c(-b,-b-d,-b-d,-b)
+legend<-get_legend(plot)
 
-ybase<-c(0.5,0.5,1.5,1.5)
-y.adjust<-c(a,a+c,a+c,a)
+# pdf(paste("Plots/Colocalization/Chromosome-",i,".pdf",sep=""),height=7.5,width=10.5)
 
-plot+geom_polygon(data=data,aes(x=xs,y=ys,group=group),fill="blue")+coord_fixed()
+png(paste("Plots/Colocalization/Chromosome-",i,".png",sep=""),height=750,width=1050)
 
+grid.newpage()
 
-### plot blocks
+pushViewport(viewport(name = "rotate", angle = -45, clip = "off", width = 0.9, height = 0.9))
+print(hap.plot, vp = "rotate")
 
-glist<-list()
+vp<-viewport(x=0.28,y=0.8,width=0.4,height = 0.1)
+pushViewport(vp)
+grid.text(as.character(paste("chromosome:",i)), 0.2, 0.2,gp=gpar(cex=1.5))
+popViewport(1)
 
-for (i in 1:17) {
-
-chrom.list<-sig.list[sig.list$chr==i, ]
-chrom.list<-chrom.list %>% gather(key="hap_type", value="block_id", hapID, sigblock_hapID)
-chrom.list$type_id<-paste(chrom.list$hap_type,chrom.list$block_id,sep="-")
-
-
-colours<-rep(c(brewer.pal(8,"Dark2"))[-7],length(unique(chrom.list$type_id)))
-
-plot<-ggplot(data= chrom.list, aes(x=fct_reorder(SNP,ps),y=hap_type,fill=fct_inorder(type_id)))+
-  geom_tile()+
-  scale_fill_manual(values=colours)+
-  theme(legend.position = "none",axis.text.x = element_text(angle = 90, vjust = 0.5,hjust=1),axis.title.x = element_blank())+
-  ggtitle(paste("chrom",i))
-
-glist[[i]]<-plot
+vp<-viewport(x=0.6,y=0.85,width=0.1,height = 0.1)
+pushViewport(vp)
+grid.draw(legend)
+popViewport(1)
+# popViewport(1)
+dev.off()
 
 }
 
-multi.page <- ggpubr::ggarrange(plotlist = glist, nrow = 3, ncol = 1)
-ggpubr::ggexport(multi.page, filename = "Plots/Colocalization/oldblocks vs newblocks.pdf")
+
+
+
+
+
+
+
+# ### plot blocks
+# 
+# glist<-list()
+# 
+# for (i in 1:17) {
+# 
+# chrom.list<-sig.list[sig.list$chr==i, ]
+# chrom.list<-chrom.list %>% gather(key="hap_type", value="block_id", hapID, sigblock_hapID)
+# chrom.list$type_id<-paste(chrom.list$hap_type,chrom.list$block_id,sep="-")
+# 
+# 
+# colours<-rep(c(brewer.pal(8,"Dark2"))[-7],length(unique(chrom.list$type_id)))
+# 
+# plot<-ggplot(data= chrom.list, aes(x=fct_reorder(SNP,ps),y=hap_type,fill=fct_inorder(type_id)))+
+#   geom_tile()+
+#   scale_fill_manual(values=colours)+
+#   theme(legend.position = "none",axis.text.x = element_text(angle = 90, vjust = 0.5,hjust=1),axis.title.x = element_blank())+
+#   ggtitle(paste("chrom",i))
+# 
+# glist[[i]]<-plot
+# 
+# }
+# 
+# multi.page <- ggpubr::ggarrange(plotlist = glist, nrow = 3, ncol = 1)
+# ggpubr::ggexport(multi.page, filename = "Plots/Colocalization/oldblocks vs newblocks.pdf")

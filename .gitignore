@@ -39,6 +39,7 @@ rsconnect/
 *.jpeg
 *.pdf
 *.jpg
+*.png
 /Phenotype data/*
 /Software/*
 /Tables/Bins/*.csv
