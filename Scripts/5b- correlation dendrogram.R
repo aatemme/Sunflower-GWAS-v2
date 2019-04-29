@@ -2,25 +2,22 @@
 library(corrr)
 library(Hmisc)
 library(ggdendro)
-library(stringi)
+# library(stringi)
+
+pheno.data<-read.csv("Phenotype data/GEMMAsalt.csv")
 
 ##### data in the colocate plot
 
 traits<-unique(plot.data$trait)
+traits.env<-paste(traits,"_",envs[i],sep="")
 
-correlate.data<-read.table(paste("Phenotype data/",traits[1],"_",unique(plot.data$env),".txt",sep=""),header=T)
-names(correlate.data)[2]<-traits[1]
 
-for(q in 2:length(traits)){
-  merge.data<-read.table(paste("Phenotype data/",traits[q],"_",unique(plot.data$env),".txt",sep=""),header=T)
-  names(merge.data)[2]<-traits[q]
-  
-  correlate.data<-merge(correlate.data,merge.data,by="Line")
-  rm(merge.data)
-  
-}
+correlate.data<-pheno.data[,match(traits.env,names(pheno.data))]
 
-correlate.data$Line<-NULL
+names(correlate.data)<-traits
+
+
+
 
 ### make environment panel correlations
 Env.corr<-rcorr(as.matrix(correlate.data),type="pearson")
