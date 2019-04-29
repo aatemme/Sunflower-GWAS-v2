@@ -1,6 +1,11 @@
 library(gridExtra)
 library(ggpubr)
 library(cowplot)
+library(wesanderson)
+
+colors<-c(wes_palette("Darjeeling1")[1],wes_palette("Darjeeling1")[5])  
+
+envs<-as.character(read.table("environments_to_run.txt")[,1])
 
 sig.blocks<-read.table("Tables/Blocks/traits_to_genomeblocks_signif.txt", header=T)
 sug.blocks<-read.table("Tables/Blocks/traits_to_genomeblocks_sugest.txt", header=T)
@@ -11,6 +16,7 @@ colocate<-rbind(sig.blocks,sug.blocks[sug.blocks$hapID%in%sig.blocks$hapID,])
 
 colocate$sighap<-sighap_to_genomehap$sig.hap[match(colocate$hapID,sighap_to_genomehap$genome.hap)]
 
+colocate$region<-sighap_to_genomehap$colocate.region[match(colocate$hapID,sighap_to_genomehap$genome.hap)]
 
 colocate$trait_env<-paste(colocate$trait,colocate$env,sep="_")
 
@@ -23,10 +29,7 @@ traits.per.block<-colocate %>% group_by(sighap) %>% summarise(trait_num=length(t
 colocate<-colocate %>% separate(sighap, sep= "_", c("chromosome","blocknum"),remove=F) %>%
                         arrange(chromosome, blocknum)
 
-colocate<- colocate %>% group_by(chromosome) %>%
-                        mutate(blockseq=match(blocknum,unique(blocknum)),beta.sign=sign(beta)) %>%
-                        mutate(region=paste(formatC(as.numeric(chromosome),width=2, flag="0"), 
-                                                               formatC(blockseq,width=2, flag="0"),sep="-"))
+colocate<- colocate %>% mutate(beta.sign=sign(beta))
 
 colocate$region<-factor(colocate$region)
 
@@ -59,7 +62,7 @@ for (i in 1: length(envs)) {
 
 plot.data<-colocate[colocate$env==envs[i],]
 
-source("Scripts/5b- correlation dendrogram.R") ### update script referal after changing names
+source("Scripts/4b - correlation dendrogram.R") ### update script referal after changing names
 
 plot.data$trait.factor<-factor(plot.data$trait,levels=Env.label.order)
 

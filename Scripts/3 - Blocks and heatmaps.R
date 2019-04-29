@@ -2,8 +2,8 @@ library(RColorBrewer)
 library(ggpubr)
 library(tidyverse)
 library(grid)
-source("Scripts/traits to haplotype blocks.R")
-source("Scripts/3b- Combine snips over traits and envs.R")
+source("Scripts/3b - SNPs in blocks.R")
+source("Scripts/3c - List significant & suggestive SNPs.R")
 
 ### rerun haplotype analyses on just significant snps
 exclude<-all.snps[!all.snps$rs%in%sig.snips$rs,]
@@ -47,10 +47,18 @@ sig.list$hapID<-NULL
 
 sig.list$hapID<-big.list$hapID[match(sig.list$SNP,big.list$SNP)]
 
+sig.list<-sig.list[order(sig.list$chr,sig.list$ps), ] ## order
+
+sig.list$sigblock_hapID<-fct_inorder(sig.list$sigblock_hapID)
+
+sig.list<-sig.list %>% group_by(chr) %>%
+  mutate(region=paste(formatC(as.numeric(chr),width=2, flag="0"), 
+                      formatC(as.numeric(factor(rank(match(sigblock_hapID,levels(sigblock_hapID))))),width=2, flag="0"),sep="-")) # super janky ordering
+
 
 sighap_to_genomehap<-data.frame(genome.hap=unique(sig.list$hapID))
 sighap_to_genomehap$sig.hap<-sig.list$sigblock_hapID[match(sighap_to_genomehap$genome.hap,sig.list$hapID)]
-
+sighap_to_genomehap$colocate.region<-sig.list$region[match(sighap_to_genomehap$genome.hap,sig.list$hapID)]
 
 ### save some of the blocks objects for later
 write.table<-write.table(sig.blocks, "Tables/Blocks/traits_to_genomeblocks_signif.txt", sep="\t", row.names=F, col.names=T)
@@ -91,7 +99,8 @@ plot<-ggplot(data=chrom,aes(y=bp_A, x=bp_B,fill=R2))+geom_tile()+scale_fill_grad
 chrom.blocks<-data.frame(bp=unique(chrom$BP_A))
 chrom.blocks$SNP<-paste("Ha412HOChr",formatC(i,width=2,flag="0"),":",chrom.blocks$bp, sep="")
 chrom.blocks$big.hap<-fct_inorder(sig.list$hapID[match(chrom.blocks$SNP,sig.list$SNP)])
-chrom.blocks$sig.hap<-fct_inorder(sig.list$sigblock_hapID[match(chrom.blocks$SNP,sig.list$SNP)])
+chrom.blocks$sig.hap<-fct_inorder(as.character(sig.list$sigblock_hapID[match(chrom.blocks$SNP,sig.list$SNP)]))
+chrom.blocks$colocate.region<-sig.list$region[match(chrom.blocks$SNP,sig.list$SNP)]
 
 #### add block info to the ld plot
 colours<-rep(c(brewer.pal(8,"Dark2"))[-7],100)
@@ -121,13 +130,18 @@ group<-c(rep(c(0:(length(chrom.blocks$SNP)-1)),each=4))
 big.hap<-data.frame(xs,ys,group)
 sig.hap<-data.frame(xs2,ys2,group)
 
+sig.hap$colocate.region<-rep(chrom.blocks$colocate.region,each=4)
+
+test<-sig.hap %>% group_by(colocate.region) %>% summarize (x=mean(xs2),y=mean(ys2))
+
 hap.plot<-plot+geom_polygon(data=big.hap,aes(x=xs,y=ys,group=group),fill=rep(chrom.blocks$big.hap.colors,each=4))+
       geom_polygon(data=sig.hap,aes(x=xs2,y=ys2,group=group),fill=rep(chrom.blocks$sig.hap.colors,each=4))+
   geom_segment(x=xs2[1],y=ys2[1],xend=xs2[length(xs2)],yend=ys2[length(ys2)],col="black")+
 coord_fixed(xlim=c(0.5,(length(chrom.blocks$SNP)+0.5)*1.05),ylim=c(0.5-(length(chrom.blocks$SNP)+0.5)*0.05,length(chrom.blocks$SNP)+0.5),clip="off",expand=0)+
   theme(legend.position="none")+
   annotate("text", x=xs[1],y=ys[1],label="Genome ", angle=45,hjust=1,vjust=0)+
-  annotate("text", x=xs2[1],y=ys2[1],label="Significant ", angle=45,hjust=1,vjust=0)
+  annotate("text", x=xs2[1],y=ys2[1],label="Significant ", angle=45,hjust=1,vjust=0)+
+  annotate("text",x=test$x,y=test$y,label=test$colocate.region, angle=45,hjust=0.5,vjust=0.5)
 
 legend<-get_legend(plot)
 

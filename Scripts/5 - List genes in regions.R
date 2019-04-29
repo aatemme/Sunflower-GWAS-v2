@@ -69,12 +69,12 @@ mrna$product<-url_decode(mrna$product)
 #######
 sig.list<-read.table("Tables/Blocks/sigsnips_to_genomeblocks.txt",header=T)
 genemap<-read.table("Tables/Blocks/condensed_genome_blocks.txt",header=T)
-colocate<-read.table("Tables/Blocks/colocate_table.txt")
-
+# colocate<-read.table("Tables/Blocks/colocate_table.txt")
+genemap$colocate.block<-genemap$colocate.region #rename
 
 
 ### add colocate block name to block key
-genemap$colocate.block<-colocate$region[match(genemap$sig.hap,colocate$sighap)]
+# genemap$colocate.block<-colocate$region[match(genemap$sig.hap,colocate$sighap)]
 
 
 genemap$start<-blocks$BP1[match(genemap$genome.hap,blocks$hapID)]
@@ -125,13 +125,15 @@ for (i in 1:length(genemap$genome.hap)) {
 gene.list$sig.hap<-genemap$sig.hap[match(gene.list$genome.hap,genemap$genome.hap)]
 gene.list$colocate.block<-genemap$colocate.block[match(gene.list$genome.hap,genemap$genome.hap)]
 
+gene.list<-gene.list %>% group_by(colocate.block) %>% group_by (locus_tag) %>% slice(1) ## remove duplicate genes from singif snps block
 
-gene.list<-gene.list %>% group_by(colocate.block) %>% group_by (locus_tag) %>% slice(1)
+gene.list<-gene.list[,c(13,1:12)] #shuffle columns for saving
 
-gene.count<-gene.list %>% group_by(colocate.block,chr) %>% count(colocate.block)
-
+write.csv(gene.list,"Tables/Genes/genelist.csv")
 
 ### plot region gene sizes
+
+gene.count<-gene.list %>% group_by(colocate.block,chr) %>% count(colocate.block)
 
 colours<-as.character(read.csv(file="Software/20colors.csv")[,2])[1:20]
 
@@ -149,4 +151,6 @@ genes.plot<-plotbase+geom_point(shape=21,col="gray",size=2)+
   xlab("significant region")+ylab("Number of genes (log10)")
 
 genes.plot
+
+ggsave("Plots/Colocalization/nr_genes.pdf",genes.plot, width=9, height=6)
 
