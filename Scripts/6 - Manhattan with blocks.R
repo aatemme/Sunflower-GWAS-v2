@@ -4,6 +4,7 @@
 library(tidyverse)
 library(data.table)
 library(RColorBrewer)
+library(ggpubr)
 
 colours<-rep(c(brewer.pal(8,"Dark2"))[-7],3)
 # library(wesanderson)
@@ -51,8 +52,8 @@ suggthresh<-0.001 ## draw line at "suggestive" SNPs (threshold fraction of snips
 #### loop over every trait and then over every environment to plot the manhattans
 #### loops within loops (insert Dune reference here)
 
-i<-15
-q<-2
+i<-26
+q<-1
 
 # for (i in 1:length(traits)){
 #   for (q in 1:length(envs)){
@@ -72,15 +73,19 @@ q<-2
     tmpcutoff <- -log10(as.data.frame(quantile(snips$p_wald,as.numeric(as.character(suggthresh))))[1,1])
     ##### bit that makes the plot
     
-    snips<- snips %>% ## code from https://www.r-graph-gallery.com/wp-content/uploads/2018/02/Manhattan_plot_in_R.html
+    spacer<-30000000
+    
+    chr_cumsum<- snips %>% ## code from https://www.r-graph-gallery.com/wp-content/uploads/2018/02/Manhattan_plot_in_R.html
             group_by(CHR) %>% 
             summarise(chr_len=max(ps)) %>%  # Compute chromosome size
             mutate(tot=cumsum(chr_len)-chr_len) %>% # Calculate cumulative position of each chromosome
-            select(-chr_len) %>%
-            left_join(snips, ., by=c("CHR"="CHR")) %>% # Add this info to the initial dataset
-            arrange(CHR, ps) %>% # Add a cumulative position of each SNP
-            mutate( BPcum=ps+tot)
+            select(-chr_len)
     
+    chr_cumsum$tot<-chr_cumsum$tot+c((spacer*chr_cumsum$CHR)-spacer)
+    
+   snips<- merge(snips, chr_cumsum, by="CHR")
+   snips$BPcum<-snips$ps+snips$tot 
+   
     snips<-data.table(snips)
     
     genome.size<-max(snips$BPcum)
@@ -100,14 +105,13 @@ q<-2
     
     
     plot<-ggplot(data=snips, aes(x=BPcum, y=-log10(p_wald),color=as.factor(CHR)))+
-      geom_point(size=0.3)+scale_color_manual(values=rep(c("grey75","grey50"),17))+
-      annotate("point",x=highlights$BPcum,y=-log10(highlights$p_wald),col=highlights$region_col)+
-      scale_x_continuous( label = axisdf$CHR, breaks= axisdf$center ) +
+      geom_point(size=0.4)+scale_color_manual(values=rep(c("grey75",brewer.pal("Blues",n=9)[3]),17))+
+      annotate("point",x=highlights$BPcum,y=-log10(highlights$p_wald),col=highlights$region_col,size=0.6)+
+      scale_x_continuous( label = axisdf$CHR, breaks= axisdf$center, expand = expand_scale(mult = c(0.02, 0.02))) +
       scale_y_continuous(expand = c(0, 0), limits=c(1,ytop), breaks=seq(from=2, to=ytop,by=2) )+
-      theme_bw() +
+      theme_light() +
       theme( 
         legend.position="none",
-        panel.border = element_blank(),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank()
       )+
@@ -116,7 +120,7 @@ q<-2
       geom_hline(yintercept=tmpcutoff,col="blue")+
       ggtitle(label)
     
-    ggsave(paste("Plots/Manhattans_regionhighlight/",traits[i],"_",envs[q],".png",sep=""),plot, height=5.5,width=7.5, units="in",dpi=300)
+    ggsave(paste("Plots/Manhattans_regionhighlight/",traits[i],"_",envs[q],".png",sep=""),plot, height=4.5,width=7.5, units="in",dpi=300)
   
 #   
 # }
