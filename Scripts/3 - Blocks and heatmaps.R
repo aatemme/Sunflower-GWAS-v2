@@ -145,9 +145,9 @@ coord_fixed(xlim=c(0.5,(length(chrom.blocks$SNP)+0.5)*1.05),ylim=c(0.5-(length(c
 
 legend<-get_legend(plot)
 
-# pdf(paste("Plots/Colocalization/Chromosome-",i,".pdf",sep=""),height=7.5,width=10.5)
+pdf(paste("Plots/Colocalization/Chromosome-",i,".pdf",sep=""),height=7.5,width=10.5)
 
-png(paste("Plots/Colocalization/Chromosome-",i,".png",sep=""),height=750,width=1050)
+# png(paste("Plots/Colocalization/Chromosome-",i,".png",sep=""),height=750,width=1050)
 
 grid.newpage()
 

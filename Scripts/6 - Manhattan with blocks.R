@@ -1,13 +1,11 @@
 ### single trait manhattans with significant blocks overlay
-##### load libraries for drawing pretty manhattan plots
-# library(qqman)
 library(tidyverse)
 library(data.table)
 library(RColorBrewer)
 library(ggpubr)
 
 colours<-rep(c(brewer.pal(8,"Dark2"))[-7],3)
-# library(wesanderson)
+
 
 sig.list<-read.table("Tables/Blocks/sigsnips_to_genomeblocks.txt",header=T)
 genemap<-read.table("Tables/Blocks/condensed_genome_blocks.txt",header=T)
@@ -52,7 +50,7 @@ suggthresh<-0.001 ## draw line at "suggestive" SNPs (threshold fraction of snips
 #### loop over every trait and then over every environment to plot the manhattans
 #### loops within loops (insert Dune reference here)
 
-i<-26
+i<-33
 q<-1
 
 # for (i in 1:length(traits)){
@@ -90,7 +88,7 @@ q<-1
     
     genome.size<-max(snips$BPcum)
     
-    axisdf <- snips %>% group_by(CHR) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 ) ## set chromosome label position
+    axisdf <- snips %>% group_by(CHR) %>% dplyr::summarize(center=( max(BPcum) + min(BPcum) ) / 2 ) ## set chromosome label position
     
     ytop <- -log10(min(snips$p_wald))
     if (ytop > 10){ ytop = ytop+2} else { ytop = 10}
