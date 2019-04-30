@@ -11,7 +11,6 @@ Height
 Iron
 LateralRoot
 LEAFLMANopet
-LEAFLMAYespet
 Leafmass
 LMF
 Magnesium
@@ -31,7 +30,4 @@ TapMF
 TapRF
 TapRoot
 Zinc
-LogPlantWeight
-Logdiff
-Mass
-Logmass
+Tolerance

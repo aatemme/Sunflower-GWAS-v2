@@ -39,6 +39,7 @@ rsconnect/
 *.jpeg
 *.pdf
 *.jpg
+*.png
 /Phenotype data/*
 /Software/*
 /Tables/Bins/*.csv
@@ -51,3 +52,6 @@ rsconnect/
 *.log
 *.reml
 *.pheno
+*.log.txt
+*.assoc.txt
+/Tables/Blocks/*

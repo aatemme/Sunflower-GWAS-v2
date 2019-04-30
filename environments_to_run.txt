@@ -1,4 +1,3 @@
 salt
 water
 logdiff
-resid
