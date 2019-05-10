@@ -5,7 +5,7 @@ library(dplyr)
 library(RColorBrewer)
 
 colors<-brewer.pal("Paired",n=8)[c(2,6)]
-
+multcomp<-as.numeric(read.table("Scripts/### multcomp correction value ###")[,1])
 
 ### name haplotype blocks and list snps per haplotype block
 blocks<-fread("Software/XRQv1_412_239_filtered.blocks.det")
@@ -18,9 +18,11 @@ big.list$hapID<-c(rep(blocks$hapID, blocks$NSNPS))
 rm(snps)
 
 ### qd solution singletons
-all.snps<-fread("Tables/Assoc_files/Calcium_logdiff.assoc.txt", header=T)
+all.snps<-fread("Software/XRQv1_412_239_filtered.map", header=F)
+names(all.snps)[1:4]<-c("chr","rs","V3","ps")
+all.snps$V3<-NULL
 
-missing.snps<-all.snps[!all.snps$rs%in%big.list$SNP, c(1:3) ]
+missing.snps<-all.snps[!all.snps$rs%in%big.list$SNP,]
 missing.snps$Chr_num<- as.integer(gsub("Ha412HOChr","",missing.snps$chr))
 missing.snps<- missing.snps %>% group_by(Chr_num) %>% mutate(hapID=paste(Chr_num,"_single",match(rs,unique(rs)),sep=""))
 missing.snps<-missing.snps[,c(2,5)]
@@ -29,7 +31,7 @@ names(missing.snps)<-c("SNP","hapID")
 big.list<-rbind(big.list,missing.snps)
 
 #### read a trait to find it's haplotype blocks
-thresh<-0.05/(31733+15809)
+thresh<-0.05/(multcomp)
 suggthresh<-0.001
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])

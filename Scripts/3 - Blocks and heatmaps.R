@@ -9,7 +9,7 @@ source("Scripts/3c - List significant & suggestive SNPs.R")
 exclude<-all.snps[!all.snps$rs%in%sig.snips$rs,]
 write.table<-write.table(exclude$rs, "Tables/Blocks/snps_NOT_in_sig_blocks.txt", sep="\t", row.names=F, col.names=T, quote=F)
 
-system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --blocks 'no-pheno-req' 'no-small-max-span' --blocks-max-kb 2000000 --blocks-strong-lowci 0.7005 --out Tables/Blocks/re_sig_blocks --allow-extra-chr")
+system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --blocks 'no-pheno-req' 'no-small-max-span' --blocks-max-kb 2000000 --blocks-strong-lowci 0.7005 --out Tables/Blocks/re_sig_blocks --allow-extra-chr --blocks-inform-frac 0.8")
 
 
 ##### generate block id for snips
@@ -74,8 +74,10 @@ ld.table<-fread("Tables/Blocks/ldtable.ld")
 
 ### plot new blocks and ld
 
-for (i in 1:17) {
-chrom<-ld.table[ld.table$CHR_A==paste("Ha412HOChr",formatC(i,width=2,flag="0"), sep=""),]
+for (i in 1:length(unique(ld.table$CHR_A))) {
+chrom<-ld.table[ld.table$CHR_A==unique(ld.table$CHR_A)[i],]
+
+Chr.num<-as.numeric(gsub("Ha412HOChr","",unique(ld.table$CHR_A)[i]))
 
 chrom.snps<-unique(c(as.character(chrom$BP_A),as.character(chrom$BP_B)))
 nsnps<-length(chrom.snps)[1]
@@ -97,7 +99,7 @@ plot<-ggplot(data=chrom,aes(y=bp_A, x=bp_B,fill=R2))+geom_tile()+scale_fill_grad
 
 ## get blocks info for the snps
 chrom.blocks<-data.frame(bp=unique(chrom$BP_A))
-chrom.blocks$SNP<-paste("Ha412HOChr",formatC(i,width=2,flag="0"),":",chrom.blocks$bp, sep="")
+chrom.blocks$SNP<-paste("Ha412HOChr",formatC(Chr.num,width=2,flag="0"),":",chrom.blocks$bp, sep="")
 chrom.blocks$big.hap<-fct_inorder(sig.list$hapID[match(chrom.blocks$SNP,sig.list$SNP)])
 chrom.blocks$sig.hap<-fct_inorder(as.character(sig.list$sigblock_hapID[match(chrom.blocks$SNP,sig.list$SNP)]))
 chrom.blocks$colocate.region<-sig.list$region[match(chrom.blocks$SNP,sig.list$SNP)]
@@ -145,9 +147,9 @@ coord_fixed(xlim=c(0.5,(length(chrom.blocks$SNP)+0.5)*1.05),ylim=c(0.5-(length(c
 
 legend<-get_legend(plot)
 
-pdf(paste("Plots/Colocalization/Chromosome-",i,".pdf",sep=""),height=7.5,width=10.5)
+# pdf(paste("Plots/Colocalization/Chromosome-",Chr.num,".pdf",sep=""),height=7.5,width=10.5)
 
-# png(paste("Plots/Colocalization/Chromosome-",i,".png",sep=""),height=750,width=1050)
+png(paste("Plots/Colocalization/Chromosome-",i,".png",sep=""),height=750,width=1050)
 
 grid.newpage()
 
@@ -156,7 +158,7 @@ print(hap.plot, vp = "rotate")
 
 vp<-viewport(x=0.28,y=0.8,width=0.4,height = 0.1)
 pushViewport(vp)
-grid.text(as.character(paste("chromosome:",i)), 0.2, 0.2,gp=gpar(cex=1.5))
+grid.text(as.character(paste("chromosome:",Chr.num)), 0.2, 0.2,gp=gpar(cex=1.5))
 popViewport(1)
 
 vp<-viewport(x=0.6,y=0.85,width=0.1,height = 0.1)

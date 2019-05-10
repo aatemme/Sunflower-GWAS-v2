@@ -10,7 +10,7 @@ library(RColorBrewer)
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
 traits<-as.character(read.table("traits_to_run.txt")[,1])
-
+multcomp<-as.numeric(read.table("Scripts/### multcomp correction value ###")[,1])
 
 suggthresh<-0.001 ## draw line at "suggestive" SNPs (threshold fraction of snips are above the blue line)
 
@@ -52,7 +52,7 @@ for (i in 1:length(traits)){
       if (length(ps1[ps1$p_wald<0.01,]$p_wald)<1) {plot(10:1)  ## draw empty plot if no snips are above minimum plotting threshold, plot fails otherwise
       }else { 
       manhattan(ps1[ps1$p_wald<0.01,],chr = "Chr_num", bp = "ps", p = "p_wald", snp = "rs",col=brewer.pal(8,"Dark2")[c(1,8)],
-                suggestiveline = -log10(tmpcutoff),genomewideline=-log10(0.05/(31733+15809)), cex=0.5, cex.axis=0.8,ylim=c(2,ytop),
+                suggestiveline = -log10(tmpcutoff),genomewideline=-log10(0.05/(multcomp)), cex=0.5, cex.axis=0.8,ylim=c(2,ytop),
                 mtext(label, side = 3, line = 0))
             }
       }

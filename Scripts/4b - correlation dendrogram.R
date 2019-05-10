@@ -9,7 +9,7 @@ pheno.data<-read.csv("Phenotype data/GEMMAsalt.csv")
 ##### data in the colocate plot
 
 traits<-unique(plot.data$trait)
-traits.env<-paste(traits,"_",envs[i],sep="")
+traits.env<-paste(traits,"_",envs[q],sep="")
 
 
 correlate.data<-pheno.data[,match(traits.env,names(pheno.data))]

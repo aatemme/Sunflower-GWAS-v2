@@ -6,9 +6,9 @@ library(data.table)
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
 traits<-as.character(read.table("traits_to_run.txt")[,1])
+multcomp<-as.numeric(read.table("Scripts/### multcomp correction value ###")[,1])
 
-
-thresh<-0.05/(31733+15809)
+thresh<-0.05/(multcomp)
 suggthresh<-0.001
 
 sig.snips<-NULL
