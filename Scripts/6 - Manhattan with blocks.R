@@ -52,8 +52,8 @@ suggthresh<-0.001 ## draw line at "suggestive" SNPs (threshold fraction of snips
 #### loop over every trait and then over every environment to plot the manhattans
 #### loops within loops (insert Dune reference here)
 
-i<-33
-q<-1
+# i<-33
+# q<-1
 
 for (i in 1:length(traits)){
   for (q in 1:length(envs)){
@@ -120,9 +120,11 @@ for (i in 1:length(traits)){
       geom_hline(yintercept=tmpcutoff,col="blue")+
       ggtitle(label)
     
-    ggsave(paste("Plots/Manhattans_regionhighlight/",traits[i],"_",envs[q],".png",sep=""),plot, height=4.5,width=7.5, units="in",dpi=300)
+    ggsave(paste("Plots/Manhattans_regionhighlight/single_env/",traits[i],"_",envs[q],".png",sep=""),plot, height=4.5,width=7.5, units="in",dpi=300)
   
-
+    assign(envs[q],plot)
   }
+  
+  comb.plot<-plot_grid(water,logdiff,salt,align="h",nrow=2)
+  ggsave(paste("Plots/Manhattans_regionhighlight/Manhattan-region-",traits[i],".png",sep=""),plot=comb.plot,height=9,width=15, units="in",dpi=300)
 }
-

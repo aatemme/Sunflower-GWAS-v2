@@ -4,7 +4,7 @@ library(cowplot)
 library(tidyverse)
 library(wesanderson)
 
-colors<-c(wes_palette("Darjeeling1")[1],wes_palette("Darjeeling1")[5])  
+colors<-c("#1b9e77", "gray85") 
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
 
@@ -58,6 +58,7 @@ colocate$region<-factor(colocate$region)
 #   facet_wrap(~env,nrow=3)
 
 #### draw the tree environment colocate plots separately
+colocate<-colocate[!duplicated(paste(colocate$region,colocate$trait_env)),]
 
 for (i in 1: length(unique(colocate$chromosome))) {
   
@@ -73,11 +74,13 @@ for (i in 1: length(unique(colocate$chromosome))) {
   
   plot.data$trait.factor<-factor(plot.data$trait,levels=Env.label.order)
   
-  baseplot<-ggplot(plot.data,aes(x=region,y=trait.factor,fill=as.factor(beta.sign)))
+  baseplot<-ggplot(plot.data,aes(x=region,y=trait.factor,fill=pvalue))
   
   plot.colocate<- baseplot+geom_vline(xintercept=c(1:length(plot.data$region)),colour="darkgrey",linetype=3)+
     geom_tile(fill="white")+
-    geom_tile(aes(alpha=pvalue),colour="black")+
+    geom_tile(colour="black")+
+    geom_point(aes(shape=as.factor(beta.sign)))+
+    scale_shape_manual(values=c("+","-"))+
     theme_minimal()+
     theme(axis.text.y = element_text(hjust = 0))+
     scale_fill_manual(values=c(colors[1],colors[2]))+
@@ -98,7 +101,7 @@ for (i in 1: length(unique(colocate$chromosome))) {
   }
   
   chrom.plot<-plot_grid(water,salt,logdiff,align="h",nrow=3)
-  ggsave(paste("Plots/Colocalization/colocate-chromosome-",i,".pdf",sep=""),plot=chrom.plot,width=6,height=9)
+  ggsave(paste("Plots/Colocalization/colocate-chromosome-",unique(colocate$chromosome)[i],".pdf",sep=""),plot=chrom.plot,width=6,height=9)
   
 }
 

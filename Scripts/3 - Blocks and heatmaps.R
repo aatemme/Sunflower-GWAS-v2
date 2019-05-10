@@ -9,7 +9,7 @@ source("Scripts/3c - List significant & suggestive SNPs.R")
 exclude<-all.snps[!all.snps$rs%in%sig.snips$rs,]
 write.table<-write.table(exclude$rs, "Tables/Blocks/snps_NOT_in_sig_blocks.txt", sep="\t", row.names=F, col.names=T, quote=F)
 
-system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --blocks 'no-pheno-req' 'no-small-max-span' --blocks-max-kb 2000000 --blocks-strong-lowci 0.7005 --out Tables/Blocks/re_sig_blocks --allow-extra-chr --blocks-inform-frac 0.8")
+system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --blocks 'no-pheno-req' 'no-small-max-span' --blocks-max-kb 2000000 --blocks-strong-lowci 0.7005 --out Tables/Blocks/re_sig_blocks --allow-extra-chr --blocks-inform-frac 0.9")
 
 
 ##### generate block id for snips
@@ -147,9 +147,9 @@ coord_fixed(xlim=c(0.5,(length(chrom.blocks$SNP)+0.5)*1.05),ylim=c(0.5-(length(c
 
 legend<-get_legend(plot)
 
-# pdf(paste("Plots/Colocalization/Chromosome-",Chr.num,".pdf",sep=""),height=7.5,width=10.5)
+pdf(paste("Plots/Colocalization/Chromosome-",Chr.num,".pdf",sep=""),height=7.5,width=10.5)
 
-png(paste("Plots/Colocalization/Chromosome-",i,".png",sep=""),height=750,width=1050)
+# png(paste("Plots/Colocalization/Chromosome-",i,".png",sep=""),height=750,width=1050)
 
 grid.newpage()
 

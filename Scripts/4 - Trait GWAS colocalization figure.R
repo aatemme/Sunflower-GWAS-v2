@@ -3,7 +3,8 @@ library(ggpubr)
 library(cowplot)
 library(wesanderson)
 
-colors<-c(wes_palette("Darjeeling1")[1],wes_palette("Darjeeling1")[5])  
+# colors<-c(wes_palette("Darjeeling1")[1],wes_palette("Darjeeling1")[5])  
+colors<-c("#1b9e77", "gray85") 
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
 
@@ -58,6 +59,9 @@ chrom.borders<-chrom.borders[1:length(chrom.borders)-1]
 
 #### draw the tree environment colocate plots separately
 
+colocate<-colocate[!duplicated(paste(colocate$region,colocate$trait_env)),]
+
+
 for (i in 1: length(envs)) {
   q<-i
 
@@ -67,16 +71,20 @@ source("Scripts/4b - correlation dendrogram.R") ### update script referal after 
 
 plot.data$trait.factor<-factor(plot.data$trait,levels=Env.label.order)
 
-baseplot<-ggplot(plot.data,aes(x=region,y=trait.factor,fill=as.factor(beta.sign)))
+
+
+baseplot<-ggplot(plot.data,aes(x=region,y=trait.factor,fill=pvalue))
 
 plot.colocate<- baseplot+geom_vline(xintercept=c(1:length(plot.data$region)),colour="darkgrey",linetype=3)+
   geom_vline(xintercept=chrom.borders,colour="black")+
   geom_tile(fill="white")+
-  geom_tile(aes(alpha=pvalue),colour="black")+
+  geom_tile(colour="black")+
+  geom_point(aes(shape=as.factor(beta.sign)))+
+  scale_shape_manual(values=c("+","-"))+
   theme_minimal()+
   theme(axis.text.y = element_text(hjust = 0))+
   scale_fill_manual(values=c(colors[1],colors[2]))+
-  scale_alpha_manual(values=c(1,0.1))+
+  scale_alpha_manual(values=c(1,0.3))+
   scale_x_discrete(drop=F)+
   theme_classic()+
   theme(axis.title.y=element_blank(),axis.text.x = element_text(angle = 90, vjust = 0.5,hjust=1))+

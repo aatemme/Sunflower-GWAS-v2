@@ -159,5 +159,5 @@ genes.plot<-plotbase+geom_point(shape=21,col="gray",size=2)+
 
 genes.plot
 
-ggsave("Plots/Colocalization/nr_genes.pdf",genes.plot, width=9, height=6)
-
+ggsave("Plots/Colocalization/nr_genes.pdf",genes.plot, width=18, height=10)
+write.csv(gene.count,"Tables/Genes/genecount.csv")
