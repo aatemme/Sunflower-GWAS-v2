@@ -1,15 +1,16 @@
 # Enchilada-GWAS-2.0
 Version two of the Enchilada suite
 
-This is a R only implementation and extention of the GWAS pipeline developed by Rishi Masalia.
+This is a R only rewrite and extention of the GWAS pipeline initiated by Rishi Masalia.
 
 Enchillada 2.0 adds:
 - Streamlined folder structure of inputs/outputs/code/software
-- Even quicker GWAS calculation using EMMAX
+- GWAS calcuation using GEMMA
 - Speedy drawing of Manhattan plots (grouped by trait with multiple environments per page)
-- Colocalization visualization
-- Identification of unique LD blocks
+- Colocalization visualization using haplotype blocks
+- Gene list per haplotype block
+- Drawing of manhattan plots with haplotype blocks overlay
 
-UPDATE 2019/03/14: Seems to stably work. Needs software data from separate location though
+UPDATE 2019/05/10: Works like a charm. Needs software data from separate location though
 
 
