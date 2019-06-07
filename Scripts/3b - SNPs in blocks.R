@@ -60,7 +60,9 @@ for (i in 1:length(traits)){
       
       sig.bins<-merge(sig.snips,big.list,by.x="rs",by.y="SNP")
       
-      sig.bins<-sig.bins %>% group_by(hapID) %>% summarise(NSNP=length(ps),beta=median(beta),min_p=min(p_wald))
+      sig.bins$PVE<-(2*(sig.bins$beta^2)*sig.bins$af*(1-sig.bins$af))/((2*(sig.bins$beta^2)*sig.bins$af*(1-sig.bins$af))+(2*(sig.bins$se^2)*(2*239)*sig.bins$af*(1-sig.bins$af)))
+      
+      sig.bins<-sig.bins %>% group_by(hapID) %>% summarise(NSNP=length(ps),beta=max(beta),min_p=min(p_wald), PVE=max(PVE))
       
       sig.bins$trait<-traits[i]
       sig.bins$env<-envs[q]
@@ -70,7 +72,9 @@ for (i in 1:length(traits)){
     
     
     sug.bins<-merge(sug.snips,big.list,by.x="rs",by.y="SNP")
-    sug.bins<-sug.bins %>% group_by(hapID) %>% summarise(NSNP=length(ps),beta=median(beta),min_p=min(p_wald))
+    sug.bins$PVE<-(2*(sug.bins$beta^2)*sug.bins$af*(1-sug.bins$af))/((2*(sug.bins$beta^2)*sug.bins$af*(1-sug.bins$af))+(2*(sug.bins$se^2)*(2*239)*sug.bins$af*(1-sug.bins$af)))
+    
+    sug.bins<-sug.bins %>% group_by(hapID) %>% summarise(NSNP=length(ps),beta=max(beta),min_p=min(p_wald), PVE=max(PVE))
     
     if(length(sug.bins$hapID)>0){
       sug.bins$trait<-traits[i]
