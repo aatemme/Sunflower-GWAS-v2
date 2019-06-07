@@ -40,9 +40,9 @@ sig.sug.fun<-function (x) {
 ##### condense to single entry per region (collapse genome blocks) 
 colocate<-colocate %>% group_by(region,trait_env) %>% dplyr::summarize(trait=trait[1],  
                                                             env=env[1],
-                                                            pvalue=sig.sug.fun(pvalue),
+                                                            pvalue=factor(sig.sug.fun(pvalue)),
                                                             chromosome=chromosome[1],
-                                                            beta.sign=sign(mean(beta.sign)))
+                                                            beta.sign=factor(sign(mean(beta.sign))))
 
 #### plot per chromosome in a loop
 
@@ -69,8 +69,8 @@ for (i in 1: length(unique(colocate$chromosome))) {
       plot.colocate<- baseplot+geom_vline(xintercept=c(1:length(plot.data$region)),colour="darkgrey",linetype=3)+
         geom_tile(fill="white")+
         geom_tile(colour="black")+
-        geom_point(aes(shape=as.factor(beta.sign)),size=4)+
-        scale_shape_manual(values=c("-","±","+"))+
+        geom_point(aes(shape=beta.sign),size=3.5)+
+        scale_shape_manual(values=c("+","-","±"))+
         theme_minimal()+
         theme(axis.text.y = element_text(hjust = 0))+
         scale_fill_manual(values=c(colors[1],colors[2]))+
