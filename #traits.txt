@@ -9,6 +9,7 @@ FineMF
 FineRF
 Height
 Iron
+KNaRatio
 LateralRoot
 LEAFLMANopet
 LEAFLMAYespet
@@ -27,11 +28,8 @@ SMF
 Sodium
 Stem
 Sulfur
+TapRoot
 TapMF
 TapRF
-TapRoot
 Zinc
-LogPlantWeight
-Logdiff
-Mass
-Logmass
+Tolerance

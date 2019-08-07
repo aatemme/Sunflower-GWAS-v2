@@ -37,6 +37,7 @@ rsconnect/
 .Rproj.user
 
 *.jpeg
+*.zip
 *.pdf
 *.jpg
 *.png
