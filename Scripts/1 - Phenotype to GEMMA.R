@@ -47,7 +47,7 @@ fam.file <- merge(fam.file,trait.data,by.x="V1",by.y="SAM")
 write.table(file="XRQv1_412_239_filtered.fam",fam.file,col.names=F, row.names=F, quote =F)
 
 
-system(paste("./gemma -bfile XRQv1_412_239_filtered -k XRQv1_412_239_filtered.cXX.txt -c XRQv1_412_filtered.PCA_EV -lmm 1 -outdir ../Tables/Assoc_files/ -o " ,paste(trait,env,sep="_"),sep=""))
+system(paste("./gemma -bfile XRQv1_412_239_filtered -k XRQv1_412_239_filtered.cXX.txt -c XRQv1_412_239_filtered.PCA_EV -lmm 1 -outdir ../Tables/Assoc_files/ -o " ,paste(trait,env,sep="_"),sep=""))
 
   }
 }

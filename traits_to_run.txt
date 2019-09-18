@@ -9,6 +9,7 @@ FineMF
 FineRF
 Height
 Iron
+KNaRatio
 LateralRoot
 LEAFLMANopet
 Leafmass
@@ -26,8 +27,8 @@ SMF
 Sodium
 Stem
 Sulfur
+TapRoot
 TapMF
 TapRF
-TapRoot
 Zinc
 Tolerance
