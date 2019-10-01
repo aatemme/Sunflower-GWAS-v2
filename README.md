@@ -1,5 +1,4 @@
-# Enchilada-GWAS-2.0
-Version two of the Enchilada suite
+# Sunflower-GWAS-2.0
 
 This is a R only rewrite and extention of the GWAS pipeline initiated by Rishi Masalia.
 
@@ -13,4 +12,4 @@ Enchillada 2.0 adds:
 
 UPDATE 2019/05/10: Works like a charm. Needs software data from separate location though
 
-
+![picture](Overview.jpg)
