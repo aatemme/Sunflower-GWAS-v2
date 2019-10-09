@@ -13,3 +13,9 @@ Enchillada 2.0 adds:
 UPDATE 2019/05/10: Works like a charm. Needs software data from separate location though
 
 ![picture](Overview.jpg)
+
+
+To do:
+
+- List R libraries needed
+- Clearer first run code in script 1
