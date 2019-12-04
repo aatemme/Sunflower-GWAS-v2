@@ -39,6 +39,11 @@ for (i in 1:length(envs)){
     print(paste(trait,env,sep="_"))
 
 select_cols = c("SAM", paste(trait,env,sep="_"))
+
+if (!select_cols[2]%in%names(pheno.data)) { 
+  print("phenotype missing")
+  next } #if the phenotype does not exist go to the next one
+
 trait.data<-pheno.data[, ..select_cols]
 
 fam.file<-fread("XRQv1_412_239_filtered.fam")
