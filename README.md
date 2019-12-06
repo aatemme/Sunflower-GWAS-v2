@@ -18,4 +18,6 @@ UPDATE 2019/05/10: Works like a charm. Needs software data from separate locatio
 To do:
 
 - List R libraries needed
-- Clearer first run code in script 1
+- Make step 0 script that had bits of code to make kinship file, blocks map, etc
+- Better block pooling rule
+- Write guide
