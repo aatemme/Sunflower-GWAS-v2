@@ -20,8 +20,10 @@ To do:
 - List R libraries needed
 - Make step 0 script that had bits of code to make kinship file, blocks map, etc
 - Better block pooling rule (any overlap == combine)
+  - Do reblocking on all SNPs in blocks containing signif SNPs instead of just the signif SNPs
 - Write guide
 - Merge script 3b and 3c into a single step
+
 
 Partial guide language
 - The blocks are generated from the 1.5 million SNPs using plink. This divides up the genome in chunks that are co-inherited (according to some set thresholds). We now have condensed the genome from 1.5 million independent SNPs to ~20K independent chunks/regions/blocks. Now from the GEMMA output we get a list of SNPs and their p-values. Since not all SNPs are independent (as evidenced from the blocking procedure) the cutoff for significance is based on the 20K independent blocks we have.
