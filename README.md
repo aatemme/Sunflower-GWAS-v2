@@ -23,6 +23,7 @@ To do:
   - Do reblocking on all SNPs in blocks containing signif SNPs instead of just the signif SNPs
 - Write guide
 - Merge script 3b and 3c into a single step
+- ggreppel block names in LD plots
 
 
 Partial guide language
