@@ -19,5 +19,6 @@ To do:
 
 - List R libraries needed
 - Make step 0 script that had bits of code to make kinship file, blocks map, etc
-- Better block pooling rule
+- Better block pooling rule (any overlap == combine)
 - Write guide
+- Merge script 3b and 3c into a single step
