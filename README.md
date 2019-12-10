@@ -24,6 +24,7 @@ To do:
 - Write guide
 - Merge script 3b and 3c into a single step
 - ggreppel block names in LD plots
+- Flag genes that have significant SNPs for traits in gene list output
 
 
 Partial guide language
