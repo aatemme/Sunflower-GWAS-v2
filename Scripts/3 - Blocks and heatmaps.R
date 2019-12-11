@@ -3,11 +3,13 @@ library(ggpubr)
 library(tidyverse)
 library(grid)
 source("Scripts/3b - SNPs in blocks.R")
-source("Scripts/3c - List significant & suggestive SNPs.R")
+
 
 ### rerun haplotype analyses on just significant snps
-exclude<-all.snps[!all.snps$rs%in%sig.snips$rs,]
-write.table<-write.table(exclude$rs, "Tables/Blocks/snps_NOT_in_sig_blocks.txt", sep="\t", row.names=F, col.names=T, quote=F)
+
+exclude<-big.list[!big.list$SNP%in%sig.snips$rs,]
+
+write.table<-write.table(exclude$SNP, "Tables/Blocks/snps_NOT_in_sig_blocks.txt", sep="\t", row.names=F, col.names=T, quote=F)
 
 system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --blocks 'no-pheno-req' 'no-small-max-span' --blocks-max-kb 2000000 --blocks-strong-lowci 0.7005 --out Tables/Blocks/re_sig_blocks --allow-extra-chr --blocks-inform-frac 0.9")
 
@@ -51,11 +53,22 @@ sig.list<-sig.list[order(sig.list$chr,sig.list$ps), ] ## order
 
 sig.list$sigblock_hapID<-fct_inorder(sig.list$sigblock_hapID)
 
+
+#### flag haplotype blocks that have been split in the new blocking instead of combined fully
+split.blocks<-sig.list %>% group_by(hapID) %>% summarise(blocks=length(unique(sigblock_hapID))) %>% filter(blocks>1)
+
+      ### keep full genome haplotype block when the block isn't fully merged with another
+      sig.list$sigblock_hapID<-as.character(sig.list$sigblock_hapID)
+      sig.list$sigblock_hapID[sig.list$hapID%in%split.blocks$hapID]<-paste(as.character(sig.list$hapID)[sig.list$hapID%in%split.blocks$hapID],"kept")
+
+sig.list$sigblock_hapID<-fct_inorder(sig.list$sigblock_hapID)
+
+#### pretty new block name
 sig.list<-sig.list %>% group_by(chr) %>%
   mutate(region=paste(formatC(as.numeric(chr),width=2, flag="0"), 
                       formatC(as.numeric(factor(rank(match(sigblock_hapID,levels(sigblock_hapID))))),width=2, flag="0"),sep="-")) # super janky ordering
 
-
+#### add new (combined) block name to significant blocks data
 sighap_to_genomehap<-data.frame(genome.hap=unique(sig.list$hapID))
 sighap_to_genomehap$sig.hap<-sig.list$sigblock_hapID[match(sighap_to_genomehap$genome.hap,sig.list$hapID)]
 sighap_to_genomehap$colocate.region<-sig.list$region[match(sighap_to_genomehap$genome.hap,sig.list$hapID)]
@@ -67,6 +80,7 @@ write.table<-write.table(sig.list, "Tables/Blocks/sigsnips_to_genomeblocks.txt",
 write.table<-write.table(sighap_to_genomehap, "Tables/Blocks/condensed_genome_blocks.txt", sep="\t", row.names=F, col.names=T)
 
 #### calculate LD (D prime) for significant snps
+
 system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --r2 dprime yes-really --ld-window-kb 2000000 --ld-window-r2 0.0 --ld-window 1000 --out Tables/Blocks/ldtable --allow-extra-chr")
 
 ld.table<-fread("Tables/Blocks/ldtable.ld")

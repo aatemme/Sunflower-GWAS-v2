@@ -39,6 +39,7 @@ traits<-as.character(read.table("traits_to_run.txt")[,1])
 
 sig.blocks<-NULL #empty object to merge against
 sug.blocks<-NULL
+sig.snips.save<-NULL
 
 for (i in 1:length(traits)){
   
@@ -51,12 +52,15 @@ for (i in 1:length(traits)){
 
     sig.bins<-NULL
     sug.bins<-NULL
+
     
     tempcutoff <- as.data.frame(quantile(snips$p_wald, as.numeric(as.character(suggthresh))))[1, 1]
     sug.snips<-snips[which(snips$p_wald<tempcutoff&snips$p_wald>thresh), ]
     
     if (range(snips$p_wald)[1]<thresh){
       sig.snips<-snips[which(snips$p_wald<thresh), ]
+      
+      sig.snips.save<-rbind(sig.snips.save,sig.snips) ### save list of significant snps
       
       sig.bins<-merge(sig.snips,big.list,by.x="rs",by.y="SNP")
       
@@ -98,63 +102,4 @@ for (i in 1:length(traits)){
   }
 }
 
-# exclude<-big.list[!big.list$hapID%in%unique(c(sig.blocks$hapID)),]
-# 
-# write.table<-write.table(exclude$SNP, "Tables/snps_NOT_in_sig_blocks.txt", sep="\t", row.names=F, col.names=T, quote=F)
-# 
-# 
-# system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/snps_NOT_in_sig_blocks.txt --blocks 'no-pheno-req' 'no-small-max-span' --blocks-max-kb 40000 --blocks-strong-lowci 0.7005 --out Tables/re_sig_blocks --allow-extra-chr")
-# 
-# 
-# new.sig.blocks<-fread("Tables/re_sig_blocks.blocks.det")
-
-
-# colocate<-rbind(sig.blocks,sug.blocks[sug.blocks$hapID%in%sig.blocks$hapID,])
-# 
-# colocate$trait_env<-paste(colocate$trait,colocate$env,sep="_")
-# 
-# traits.per.block<-colocate %>% group_by(hapID) %>% summarise(trait_num=length(trait_env))
-# 
-# single.trait.blocks<-colocate[colocate$hapID%in%traits.per.block$hapID[traits.per.block$trait_num==1],]
-# 
-# colocate<-colocate[!colocate$hapID%in%traits.per.block$hapID[traits.per.block$trait_num==1],]
-# 
-# colocate<-colocate %>% separate(hapID, sep= "_", c("chromosome","blocknum"),remove=F) %>% 
-#                         arrange(chromosome, blocknum)
-# 
-# colocate<- colocate %>% group_by(chromosome) %>% 
-#                         mutate(blockseq=match(blocknum,unique(blocknum)),beta.sign=sign(beta)) %>%
-#                         mutate(region=paste(formatC(as.numeric(chromosome),width=2, flag="0"), formatC(blockseq,width=2, flag="0"),sep="-"))
-# 
-# chrom.borders<-colocate %>% group_by(chromosome)%>% summarise(bin=n_distinct(blockseq))
-# chrom.borders<-cumsum(chrom.borders$bin)
-# chrom.borders<-chrom.borders+0.5
-# chrom.borders<-chrom.borders[1:length(chrom.borders)-1]
-# 
-# 
-# 
-# 
-# plot.data<-colocate[colocate$env=="water",]
-# 
-# chrom.borders<-plot.data %>% group_by(chromosome)%>% summarise(bin=length(unique(region))) %>% arrange(as.integer(chromosome))
-# chrom.borders<-cumsum(chrom.borders$bin)
-# chrom.borders<-chrom.borders+0.5
-# chrom.borders<-chrom.borders[1:length(chrom.borders)-1]
-# 
-# baseplot<-ggplot(plot.data,aes(x=region,y=trait,fill=as.factor(beta.sign)))
-# 
-# baseplot+geom_vline(xintercept=c(1:length(plot.data$region)),colour="darkgrey",linetype=3)+
-#   geom_vline(xintercept=chrom.borders,colour="black")+
-#   geom_tile(fill="white")+
-#   geom_tile(aes(alpha=pvalue),colour="black")+
-#   theme_minimal()+
-#   theme(axis.text.y = element_text(hjust = 0))+
-#   scale_fill_manual(values=c(colors[1],colors[2]))+
-#   scale_alpha_manual(values=c(1,0.1))+
-#   scale_x_discrete(drop=F)+
-#   theme_classic()+
-#   theme(axis.title.y=element_blank(),axis.text.x = element_text(angle = 90, vjust = 0.5,hjust=1))+
-#   ggtitle("control")+theme(legend.position = "none")+theme(axis.title.x=element_blank())
-# 
-# 
-
+sig.snips<-unique(sig.snips.save,by="rs")[,1:3]
