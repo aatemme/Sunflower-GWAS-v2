@@ -29,7 +29,7 @@ colocate<-rbind(sig.blocks,sug.blocks[sug.blocks$hapID%in%sig.blocks$hapID,])
     colocate$region<-factor(colocate$region)
 
 
-############## function that helps with settting a region as significant if it's only significant for one of it's component genome regions
+############## function that helps with settting a region as significant if it's only significant for one of it's component genome haplotype blocks
 sig.sug.fun<-function (x) {
  if (sum("significant"%in%x)>0) {y<-"signficicant"} 
   if (sum("significant"%in%x)==0) {y<-"suggestive"}

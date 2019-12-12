@@ -60,7 +60,12 @@ for (i in 1:length(traits)){
     if (range(snips$p_wald)[1]<thresh){
       sig.snips<-snips[which(snips$p_wald<thresh), ]
       
-      sig.snips.save<-rbind(sig.snips.save,sig.snips) ### save list of significant snps
+      sig.snips.list<-sig.snips
+      sig.snips.list$trait<-traits[i]
+      sig.snips.list$env<-envs[q]
+      
+      sig.snips.save<-rbind(sig.snips.save,sig.snips.list) ### save list of significant snps
+      
       
       sig.bins<-merge(sig.snips,big.list,by.x="rs",by.y="SNP")
       
@@ -103,3 +108,6 @@ for (i in 1:length(traits)){
 }
 
 sig.snips<-unique(sig.snips.save,by="rs")[,1:3]
+
+write.table<-write.table(sig.snips.save, "Tables/Blocks/signif_snps_alltraits.txt", sep="\t", row.names=F, col.names=T)
+

@@ -1,6 +1,6 @@
 ### new genelist finder
 ##### Wrangling the GFF3 file
-library(ape)
+
 library(tidyverse)
 library(data.table)
 library(urltools) #for parsing of gene product special characters
@@ -76,8 +76,9 @@ mrna$attributes<-NULL
 #######
 sig.list<-read.table("Tables/Blocks/sigsnips_to_genomeblocks.txt",header=T)
 genemap<-read.table("Tables/Blocks/condensed_genome_blocks.txt",header=T)
-# colocate<-read.table("Tables/Blocks/colocate_table.txt")
+colocate<-read.table("Tables/Blocks/colocate_table.txt")
 genemap$colocate.block<-genemap$colocate.region #rename
+sig.snips<-read.table("Tables/Blocks/signif_snps_alltraits.txt")
 
 
 ### add colocate block name to block key
@@ -135,6 +136,11 @@ gene.list$colocate.block<-genemap$colocate.block[match(gene.list$genome.hap,gene
 gene.list<-gene.list %>% group_by(colocate.block) %>% group_by (locus_tag) %>% slice(1) ## remove duplicate genes from singif snps block
 
 gene.list<-gene.list[,c(13,1:12)] #shuffle columns for saving
+
+
+##### add traits for which the block is significant
+
+
 
 write.csv(gene.list,"Tables/Genes/genelist.csv")
 
