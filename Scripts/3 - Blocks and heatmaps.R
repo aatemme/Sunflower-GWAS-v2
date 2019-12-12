@@ -2,6 +2,7 @@ library(RColorBrewer)
 library(ggpubr)
 library(tidyverse)
 library(grid)
+library(ggrepel)
 source("Scripts/3b - SNPs in blocks.R")
 
 
@@ -156,8 +157,15 @@ hap.plot<-plot+geom_polygon(data=big.hap,aes(x=xs,y=ys,group=group),fill=rep(chr
 coord_fixed(xlim=c(0.5,(length(chrom.blocks$SNP)+0.5)*1.05),ylim=c(0.5-(length(chrom.blocks$SNP)+0.5)*0.05,length(chrom.blocks$SNP)+0.5),clip="off",expand=0)+
   theme(legend.position="none")+
   annotate("text", x=xs[1],y=ys[1],label="Genome ", angle=45,hjust=1,vjust=0)+
-  annotate("text", x=xs2[1],y=ys2[1],label="Significant ", angle=45,hjust=1,vjust=0)+
-  annotate("text",x=test$x,y=test$y,label=test$colocate.region, angle=45,hjust=0.5,vjust=0.5)
+  annotate("text", x=xs2[1],y=ys2[1],label="Significant ", angle=45,hjust=1,vjust=0)
+  # annotate("text",x=test$x,y=test$y,label=test$colocate.region, angle=45,hjust=0.5,vjust=0.5)
+
+
+hap.plot<-hap.plot+geom_text_repel(data=test,aes(x=x,y=y,label=colocate.region,group=NULL,fill=NULL),
+                         nudge_y=8*a,
+                         nudge_x=-b,
+                         direction="y",
+                         angle=45)
 
 legend<-get_legend(plot)
 
