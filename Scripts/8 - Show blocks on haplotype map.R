@@ -64,7 +64,7 @@ nrcol<-4
 blocks$blockcol<-rep(1:nrcol,length=nrow(blocks))
 
 plotbase<-ggplot(data=blocks,aes(x=BP1,y=1))
-plotbase+theme_minimal()+
+blockmap<-plotbase+theme_minimal()+
   geom_rect(data=blocks,xmin=blocks$BP1,xmax=blocks$BP2,ymin=0,ymax=1,aes(fill=as.factor(blockcol)))+
   scale_fill_manual(values=brewer.pal(nrcol,"Dark2"))+
   # geom_segment(x=blocks$BP1,xend=blocks$BP2,y=0,yend=0,col="black")+
@@ -75,3 +75,5 @@ plotbase+theme_minimal()+
   scale_x_continuous(labels = comma,breaks=c(0,50e6,100e6,150e6,200e6))+
   theme(axis.text.x = element_text(angle=20,hjust=1),
         axis.text.y = element_blank(),axis.title.y = element_blank())+xlab("Base position")
+
+ggsave("Plots/Colocalization/regions_on_blockmap.pdf",blockmap, width=14.24, height=7.6)
