@@ -19,11 +19,7 @@ To do:
 
 - List R libraries needed
 - Make step 0 script that had bits of code to make kinship file, blocks map, etc
-- Better block pooling rule (any overlap == combine)
-  - Do reblocking on all SNPs in blocks containing signif SNPs instead of just the signif SNPs
 - Write guide
-- Merge script 3b and 3c into a single step
-- ggreppel block names in LD plots
 - Flag genes that have significant SNPs for traits in gene list output
 
 
