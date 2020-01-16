@@ -1,6 +1,5 @@
 Abovemass
 Boron
-Bud
 Calcium
 Chlorophyll
 Copper
@@ -17,6 +16,7 @@ LMF
 Magnesium
 Manganese
 Nitrogen
+Pctflower
 PetMF
 Phosphorus
 PlantWeight

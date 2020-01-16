@@ -73,7 +73,7 @@ for (i in 1: length(unique(colocate$chromosome))) {
         scale_shape_manual(values=c("+","-","±"))+
         theme_minimal()+
         theme(axis.text.y = element_text(hjust = 0))+
-        scale_fill_manual(values=c(colors[1],colors[2]))+
+        scale_fill_manual(values=c(colors[2],colors[1]))+
         scale_alpha_manual(values=c(1,0.1))+
         scale_x_discrete(drop=F)+
         theme_classic()+

@@ -93,7 +93,7 @@ plot.colocate<- baseplot+geom_vline(xintercept=c(1:length(plot.data$region)),col
   scale_shape_manual(values=c("+","-","±"))+
   theme_minimal()+
   theme(axis.text.y = element_text(hjust = 0))+
-  scale_fill_manual(values=c(colors[1],colors[2]))+
+  scale_fill_manual(values=c(colors[2],colors[1]))+
   scale_alpha_manual(values=c(1,0.3))+
   scale_x_discrete(drop=F)+
   theme_classic()+

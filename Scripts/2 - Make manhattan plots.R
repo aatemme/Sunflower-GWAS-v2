@@ -39,12 +39,12 @@ for (i in 1:length(traits)){
       
       ##### bit that makes the plot
       pvalue <- snips$p_wald
-      ytop <- -log10(min(pvalue))
+      ytop <- -log10(min(pvalue,na.rm=T))
       if (ytop > 10){ ytop = ytop+2} else { ytop = 10}
       
       ps1<- merge(snp.map,snips,by=c("chr","rs","ps"))
       
-      tmpcutoff <- as.data.frame(quantile(ps1$p_wald,as.numeric(as.character(suggthresh))))[1,1]
+      tmpcutoff <- as.data.frame(quantile(ps1$p_wald,as.numeric(as.character(suggthresh)),na.rm=T))[1,1]
       
       label<-paste(traits[i],envs[q])
       print(label)

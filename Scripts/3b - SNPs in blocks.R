@@ -54,10 +54,10 @@ for (i in 1:length(traits)){
     sug.bins<-NULL
 
     
-    tempcutoff <- as.data.frame(quantile(snips$p_wald, as.numeric(as.character(suggthresh))))[1, 1]
+    tempcutoff <- as.data.frame(quantile(snips$p_wald, as.numeric(as.character(suggthresh)),na.rm=T))[1, 1]
     sug.snips<-snips[which(snips$p_wald<tempcutoff&snips$p_wald>thresh), ]
     
-    if (range(snips$p_wald)[1]<thresh){
+    if (range(snips$p_wald,na.rm=T)[1]<thresh){
       sig.snips<-snips[which(snips$p_wald<thresh), ]
       
       sig.snips.list<-sig.snips
