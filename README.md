@@ -15,7 +15,7 @@ UPDATE 2019/05/10: Works like a charm. Needs software data from separate locatio
 ![picture](Overview.jpg)
 
 
-To do:
+Ongoing improvements:
 
 - List R libraries needed
 - Make step 0 script that had bits of code to make kinship file, blocks map, etc
@@ -24,7 +24,8 @@ To do:
 - Add preferences file for multcomp value, snip set name, phenotype file name
 - script that counts regions per trait and trait per region
 - PVE per region following Masalia et al 2018
-- 
+- Heritability per region
+- Epistatis graph (R2 between regions on different chromosomes (within cromosomes already captured in LD plot))
 
 
 Partial guide language
