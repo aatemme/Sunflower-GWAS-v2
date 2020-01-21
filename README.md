@@ -5,7 +5,6 @@ This is a R only rewrite and extention of the sunflower GWAS pipeline initiated 
 This Sunflower-GWAS-2.0 pipeline adds:
 - Streamlined folder structure of inputs/outputs/code/software
 - GWAS calcuation using GEMMA
-- Speedy drawing of Manhattan plots (grouped by trait with multiple environments per page)
 - Colocalization visualization using haplotype blocks
 - Gene list per haplotype block
 - Drawing of manhattan plots with haplotype blocks overlay
@@ -21,8 +20,6 @@ Ongoing improvements:
 - Make step 0 script that had bits of code to make kinship file, blocks map, etc
 - Write guide
 - Flag genes that have significant SNPs for traits in gene list output
-- Add preferences file for multcomp value, snip set name, phenotype file name
-- script that counts regions per trait and trait per region
 - PVE per region following Masalia et al 2018
 - Heritability per region
 - Epistatis graph (R2 between regions on different chromosomes (within cromosomes already captured in LD plot))
