@@ -5,6 +5,11 @@ library(grid)
 library(ggrepel)
 source("Scripts/3b - SNPs in blocks.R")
 
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
 
 ### rerun haplotype analyses on just significant snps
 
@@ -12,12 +17,13 @@ exclude<-big.list[!big.list$SNP%in%sig.snips$rs,]
 
 write.table<-write.table(exclude$SNP, "Tables/Blocks/snps_NOT_in_sig_blocks.txt", sep="\t", row.names=F, col.names=T, quote=F)
 
-system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --blocks 'no-pheno-req' 'no-small-max-span' --blocks-max-kb 2000000 --blocks-strong-lowci 0.7005 --out Tables/Blocks/re_sig_blocks --allow-extra-chr --blocks-inform-frac 0.9")
+system(paste("./Software/plink --tped Software/",SNPset,".tped --tfam Software/",SNPset,".tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --blocks 'no-pheno-req' 'no-small-max-span' --blocks-max-kb 2000000 --blocks-strong-lowci 0.7005 --out Tables/Blocks/re_sig_blocks --allow-extra-chr --blocks-inform-frac 0.9",sep=""))
 
 
 ##### generate block id for snips
 new.sig.blocks<-fread("Tables/Blocks/re_sig_blocks.blocks.det")
 
+if (dim(new.sig.blocks)[1]>0) {
 new.sig.blocks$Chr_num<- as.integer(gsub("Ha412HOChr","",new.sig.blocks$CHR))
 new.sig.blocks<- new.sig.blocks %>% group_by(Chr_num) %>% mutate(hapID = paste(Chr_num,c(1:length(Chr_num)),sep="_"))
 snps<-strsplit(new.sig.blocks$SNPS,split="|",fixed=T)
@@ -25,6 +31,7 @@ sig.list<-unlist(snps)
 sig.list<-data.table(SNP=sig.list)
 sig.list$hapID<-c(rep(new.sig.blocks$hapID, new.sig.blocks$NSNPS))
 rm(snps)
+} else {sig.list<-data.frame(SNP=c(),hapID=c())} ## for when there are zero blocks
 
 ##### add in in singletons for significant snps
 missing.snps<-sig.snips[!sig.snips$rs%in%sig.list$SNP, c(1:3) ]
@@ -82,7 +89,7 @@ write.table<-write.table(sighap_to_genomehap, "Tables/Blocks/condensed_genome_bl
 
 #### calculate LD (D prime) for significant snps
 
-system("./Software/plink --tped Software/XRQv1_412_239_filtered.tped --tfam Software/XRQv1_412_239_filtered.tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --r2 dprime yes-really --ld-window-kb 2000000 --ld-window-r2 0.0 --ld-window 1000 --out Tables/Blocks/ldtable --allow-extra-chr")
+system(paste("./Software/plink --tped Software/",SNPset,".tped --tfam Software/",SNPset,".tfam --exclude Tables/Blocks/snps_NOT_in_sig_blocks.txt --r2 dprime yes-really --ld-window-kb 2000000 --ld-window-r2 0.0 --ld-window 1000 --out Tables/Blocks/ldtable --allow-extra-chr",sep=""))
 
 ld.table<-fread("Tables/Blocks/ldtable.ld")
 
@@ -192,35 +199,3 @@ dev.off()
 
 }
 
-
-
-
-
-
-
-
-# ### plot blocks
-# 
-# glist<-list()
-# 
-# for (i in 1:17) {
-# 
-# chrom.list<-sig.list[sig.list$chr==i, ]
-# chrom.list<-chrom.list %>% gather(key="hap_type", value="block_id", hapID, sigblock_hapID)
-# chrom.list$type_id<-paste(chrom.list$hap_type,chrom.list$block_id,sep="-")
-# 
-# 
-# colours<-rep(c(brewer.pal(8,"Dark2"))[-7],length(unique(chrom.list$type_id)))
-# 
-# plot<-ggplot(data= chrom.list, aes(x=fct_reorder(SNP,ps),y=hap_type,fill=fct_inorder(type_id)))+
-#   geom_tile()+
-#   scale_fill_manual(values=colours)+
-#   theme(legend.position = "none",axis.text.x = element_text(angle = 90, vjust = 0.5,hjust=1),axis.title.x = element_blank())+
-#   ggtitle(paste("chrom",i))
-# 
-# glist[[i]]<-plot
-# 
-# }
-# 
-# multi.page <- ggpubr::ggarrange(plotlist = glist, nrow = 3, ncol = 1)
-# ggpubr::ggexport(multi.page, filename = "Plots/Colocalization/oldblocks vs newblocks.pdf")

@@ -4,6 +4,13 @@ library(cowplot)
 library(tidyverse)
 library(wesanderson)
 
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
+
+####
 colors<-c("#1b9e77", "gray85") 
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
@@ -70,7 +77,7 @@ for (i in 1: length(unique(colocate$chromosome))) {
         geom_tile(fill="white")+
         geom_tile(colour="black")+
         geom_point(aes(shape=beta.sign),size=3.5)+
-        scale_shape_manual(values=c("+","-","±"))+
+        scale_shape_manual(values=c("-","+","±"))+
         theme_minimal()+
         theme(axis.text.y = element_text(hjust = 0))+
         scale_fill_manual(values=c(colors[2],colors[1]))+
@@ -94,7 +101,7 @@ for (i in 1: length(unique(colocate$chromosome))) {
       trait.count[q]<-length(Env.label.order)
   }
   
-  trait.count<-trait.count[c(2,1,3)]
+  trait.count<-trait.count[c(1,2,3)]
   trait.plot<-plot_grid(water,salt,logdiff,align="v",nrow=3,rel_heights=trait.count+2.5)
   dendro.plot<-plot_grid(water_dendro,salt_dendro,logdiff_dendro,align="v",nrow=3,rel_heights=trait.count+2.5)
   

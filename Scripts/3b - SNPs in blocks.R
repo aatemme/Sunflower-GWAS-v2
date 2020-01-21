@@ -4,11 +4,14 @@ library(tidyverse)
 library(dplyr)
 library(RColorBrewer)
 
-colors<-brewer.pal("Paired",n=8)[c(2,6)]
-multcomp<-as.numeric(read.table("Scripts/### multcomp correction value ###")[,1])
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
 
 ### name haplotype blocks and list snps per haplotype block
-blocks<-fread("Software/XRQv1_412_239_filtered.blocks.det")
+blocks<-fread(paste("Software/",SNPset,".blocks.det",sep=""))
 blocks$Chr_num<- as.integer(gsub("Ha412HOChr","",blocks$CHR))
 blocks<- blocks %>% group_by(Chr_num) %>% mutate(hapID = paste(Chr_num,c(1:length(Chr_num)),sep="_"))
 snps<-strsplit(blocks$SNPS,split="|",fixed=T)
@@ -18,7 +21,7 @@ big.list$hapID<-c(rep(blocks$hapID, blocks$NSNPS))
 rm(snps)
 
 ### qd solution singletons
-all.snps<-fread("Software/XRQv1_412_239_filtered.map", header=F)
+all.snps<-fread(paste("Software/",SNPset,".map",sep=""), header=F)
 names(all.snps)[1:4]<-c("chr","rs","V3","ps")
 all.snps$V3<-NULL
 
@@ -69,7 +72,7 @@ for (i in 1:length(traits)){
       
       sig.bins<-merge(sig.snips,big.list,by.x="rs",by.y="SNP")
       
-      sig.bins$PVE<-(2*(sig.bins$beta^2)*sig.bins$af*(1-sig.bins$af))/((2*(sig.bins$beta^2)*sig.bins$af*(1-sig.bins$af))+(2*(sig.bins$se^2)*(2*239)*sig.bins$af*(1-sig.bins$af)))
+      sig.bins$PVE<-(2*(sig.bins$beta^2)*sig.bins$af*(1-sig.bins$af))/((2*(sig.bins$beta^2)*sig.bins$af*(1-sig.bins$af))+((sig.bins$se^2)*(2*239)*sig.bins$af*(1-sig.bins$af)))
       
       sig.bins<-sig.bins %>% group_by(hapID) %>% summarise(NSNP=length(ps),beta=max(beta),min_p=min(p_wald), PVE=max(PVE))
       

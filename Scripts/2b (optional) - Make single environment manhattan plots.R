@@ -4,19 +4,23 @@ library(qqman)
 library(tidyverse)
 library(data.table)
 library(RColorBrewer)
-# library(wesanderson)
 
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
 
 ###setup the data
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
 traits<-as.character(read.table("traits_to_run.txt")[,1])
-multcomp<-as.numeric(read.table("Scripts/### multcomp correction value ###")[,1])
+
 
 suggthresh<-0.001 ## draw line at "suggestive" SNPs (threshold fraction of snips are above the blue line)
 
 ### easy map to allign the snips to
-snp.map = fread(file="Software/XRQv1_412_239_filtered.map",header= F) ###for easier plotting of snip locations
+snp.map = fread(file=paste("Software/",SNPset,".map",sep=""),header= F) ###for easier plotting of snip locations
 colnames(snp.map)<-c("chr","rs","Chr_num","ps")
 snp.map$Chr_num <- as.integer(gsub("Ha412HOChr","",snp.map$chr))
 

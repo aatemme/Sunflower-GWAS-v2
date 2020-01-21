@@ -4,8 +4,16 @@ library(data.table)
 library(RColorBrewer)
 library(ggpubr)
 
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
+
+####
+
 colours<-rep(c(brewer.pal(8,"Dark2"))[-7],3)
-multcomp<-as.numeric(read.table("Scripts/### multcomp correction value ###")[,1])
+
 
 sig.list<-read.table("Tables/Blocks/sigsnips_to_genomeblocks.txt",header=T)
 genemap<-read.table("Tables/Blocks/condensed_genome_blocks.txt",header=T)
@@ -14,46 +22,37 @@ colocate<-read.table("Tables/Blocks/colocate_table.txt")
 colocate<- colocate %>% group_by(chromosome) %>% mutate(region_col=colours[as.numeric(factor(rank(match(region,levels(region)))))])
 
 ### name haplotype blocks and list snps per haplotype block
-blocks<-fread("Software/XRQv1_412_239_filtered.blocks.det")
-blocks$Chr_num<- as.integer(gsub("Ha412HOChr","",blocks$CHR))
-blocks<- blocks %>% group_by(Chr_num) %>% mutate(hapID = paste(Chr_num,c(1:length(Chr_num)),sep="_"))
-snps<-strsplit(blocks$SNPS,split="|",fixed=T)
-big.list<-unlist(snps)
-big.list<-data.table(SNP=big.list)
-big.list$hapID<-c(rep(blocks$hapID, blocks$NSNPS))
-rm(snps)
-
-### qd solution singletons
-all.snps<-fread("Software/XRQv1_412_239_filtered.map", header=F)
-names(all.snps)[1:4]<-c("chr","rs","V3","ps")
-all.snps$V3<-NULL
-
-missing.snps<-all.snps[!all.snps$rs%in%big.list$SNP,]
-missing.snps$Chr_num<- as.integer(gsub("Ha412HOChr","",missing.snps$chr))
-missing.snps<- missing.snps %>% group_by(Chr_num) %>% mutate(hapID=paste(Chr_num,"_single",match(rs,unique(rs)),sep=""))
-missing.snps<-missing.snps[,c(2,5)]
-names(missing.snps)<-c("SNP","hapID")
-
-big.list<-rbind(big.list,missing.snps)
+    blocks<-fread(paste("Software/",SNPset,".blocks.det",sep=""))
+    blocks$Chr_num<- as.integer(gsub("Ha412HOChr","",blocks$CHR))
+    blocks<- blocks %>% group_by(Chr_num) %>% mutate(hapID = paste(Chr_num,c(1:length(Chr_num)),sep="_"))
+    snps<-strsplit(blocks$SNPS,split="|",fixed=T)
+    big.list<-unlist(snps)
+    big.list<-data.table(SNP=big.list)
+    big.list$hapID<-c(rep(blocks$hapID, blocks$NSNPS))
+    rm(snps)
+    
+    ### qd solution singletons
+    all.snps<-fread(paste("Software/",SNPset,".map",sep=""), header=F)
+    names(all.snps)[1:4]<-c("chr","rs","V3","ps")
+    all.snps$V3<-NULL
+    
+    missing.snps<-all.snps[!all.snps$rs%in%big.list$SNP,]
+    missing.snps$Chr_num<- as.integer(gsub("Ha412HOChr","",missing.snps$chr))
+    missing.snps<- missing.snps %>% group_by(Chr_num) %>% mutate(hapID=paste(Chr_num,"_single",match(rs,unique(rs)),sep=""))
+    missing.snps<-missing.snps[,c(2,5)]
+    names(missing.snps)<-c("SNP","hapID")
+    
+    big.list<-rbind(big.list,missing.snps)
 
 ###setup the data
 
-envs<-as.character(read.table("environments_to_run.txt")[,1])
-traits<-as.character(read.table("traits_to_run.txt")[,1])
-
-
-suggthresh<-0.001 ## draw line at "suggestive" SNPs (threshold fraction of snips are above the blue line)
-
-### easy map to allign the snips to
-# snp.map = fread(file="Software/XRQv1_412_239_filtered.map",header= F) ###for easier plotting of snip locations
-# colnames(snp.map)<-c("chr","rs","Chr_num","ps")
-# snp.map$Chr_num <- as.integer(gsub("Ha412HOChr","",snp.map$chr))
+  envs<-as.character(read.table("environments_to_run.txt")[,1])
+  traits<-as.character(read.table("traits_to_run.txt")[,1])
+  
+  suggthresh<-0.001 ## draw line at "suggestive" SNPs (threshold fraction of snips are above the blue line)
 
 #### loop over every trait and then over every environment to plot the manhattans
 #### loops within loops (insert Dune reference here)
-
-# i<-33
-# q<-1
 
 for (i in 1:length(traits)){
   for (q in 1:length(envs)){

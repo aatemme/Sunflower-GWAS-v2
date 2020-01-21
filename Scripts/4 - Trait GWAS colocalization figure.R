@@ -3,7 +3,13 @@ library(ggpubr)
 library(cowplot)
 library(wesanderson)
 
-# colors<-c(wes_palette("Darjeeling1")[1],wes_palette("Darjeeling1")[5])  
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
+
+##########
 colors<-c("#1b9e77", "gray85") 
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
@@ -51,22 +57,6 @@ chrom.borders<-cumsum(chrom.borders$bin)
 chrom.borders<-chrom.borders+0.5
 chrom.borders<-chrom.borders[1:length(chrom.borders)-1]
 
-# baseplot<-ggplot(colocate,aes(x=region,y=trait,fill=as.factor(beta.sign)))
-# 
-# baseplot+geom_vline(xintercept=c(1:length(plot.data$region)),colour="darkgrey",linetype=3)+
-#   geom_vline(xintercept=chrom.borders,colour="black")+
-#   geom_tile(fill="white")+
-#   geom_tile(aes(alpha=pvalue),colour="black")+
-#   theme_minimal()+
-#   theme(axis.text.y = element_text(hjust = 0))+
-#   scale_fill_manual(values=c(colors[1],colors[2]))+
-#   scale_alpha_manual(values=c(1,0.1))+
-#   scale_x_discrete(drop=F)+
-#   theme_classic()+
-#   theme(axis.title.y=element_blank(),axis.text.x = element_text(angle = 90, vjust = 0.5,hjust=1))+
-#   ggtitle("control")+theme(legend.position = "none")+theme(axis.title.x=element_blank())+
-#   facet_wrap(~env,nrow=3)
-
 #### draw the tree environment colocate plots separately
 
 colocate<-colocate[!duplicated(paste(colocate$region,colocate$trait_env)),]
@@ -112,21 +102,4 @@ trait.to.region.ratio<-length(levels(plot.data$region))/length(Env.label.order)
 ggsave(paste("Plots/Colocalization/colocate-",envs[i],".pdf",sep=""),plot=comb.plot,width=22,height=6)
 
 }
-
-# baseplot<-ggplot(plot.data,aes(x=region,y=trait,fill=as.factor(beta.sign)))
-# 
-# baseplot+geom_vline(xintercept=c(1:length(plot.data$region)),colour="darkgrey",linetype=3)+
-#   geom_vline(xintercept=chrom.borders,colour="black")+
-#   geom_tile(fill="white")+
-#   geom_tile(aes(alpha=pvalue),colour="black")+
-#   theme_minimal()+
-#   theme(axis.text.y = element_text(hjust = 0))+
-#   scale_fill_manual(values=c(colors[1],colors[2]))+
-#   scale_alpha_manual(values=c(1,0.1))+
-#   scale_x_discrete(drop=F)+
-#   theme_classic()+
-#   theme(axis.title.y=element_blank(),axis.text.x = element_text(angle = 90, vjust = 0.5,hjust=1))+
-#   ggtitle("control")+theme(legend.position = "none")+theme(axis.title.x=element_blank())
-
-
 

@@ -1,10 +1,16 @@
 ### new genelist finder
-##### Wrangling the GFF3 file
-
 library(tidyverse)
 library(data.table)
 library(urltools) #for parsing of gene product special characters
 
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
+
+####
+##### Wrangling the GFF3 file
 # ### function to pars atributes from package "davidTiling" (not the data.table way.... == slow)
 # getAttributeField <- function (x, field, attrsep = ";") {
 #   s = strsplit(x, split = attrsep, fixed = TRUE)
@@ -51,7 +57,7 @@ mrna$attributes<-NULL
 # sig.blocks<-read.table("Tables/Blocks/traits_to_genomeblocks_signif.txt", header=T)
 # sug.blocks<-read.table("Tables/Blocks/traits_to_genomeblocks_sugest.txt", header=T)
 ### name haplotype blocks and list snps per haplotype block
-    blocks<-fread("Software/XRQv1_412_239_filtered.blocks.det")
+    blocks<-fread(paste("Software/",SNPset,".blocks.det",sep=""))
     blocks$Chr_num<- as.integer(gsub("Ha412HOChr","",blocks$CHR))
     blocks<- blocks %>% group_by(Chr_num) %>% mutate(hapID = paste(Chr_num,c(1:length(Chr_num)),sep="_"))
     snps<-strsplit(blocks$SNPS,split="|",fixed=T)
@@ -61,7 +67,7 @@ mrna$attributes<-NULL
     rm(snps)
     
     ### qd solution singletons
-    all.snps<-fread("Software/XRQv1_412_239_filtered.map", header=F)
+    all.snps<-fread(paste("Software/",SNPset,".map",sep=""), header=F)
     names(all.snps)[1:4]<-c("chr","rs","V3","ps")
     all.snps$V3<-NULL
     

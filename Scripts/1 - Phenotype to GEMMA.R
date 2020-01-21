@@ -5,13 +5,19 @@
 ##### Algorithm: GEMMA
 library(data.table)
 
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
+
+
 ## Read in traits and environments to run
 envs<-as.character(read.table("environments_to_run.txt")[,1])
 traits<-as.character(read.table("traits_to_run.txt")[,1])
 
-pheno.data<-fread("Phenotype data/GEMMAsalt.csv")
-fam.file<-fread("Software/XRQv1_412_239_filtered.fam")
-fam.file$V6<-NULL
+pheno.data<-fread(paste("Phenotype data/",pheno.name,sep=""))
+
 
 setwd("Software")
 for (i in 1:length(envs)){
@@ -31,13 +37,13 @@ if (!select_cols[2]%in%names(pheno.data)) {
 
 trait.data<-pheno.data[, ..select_cols]
 
-fam.file<-fread("XRQv1_412_239_filtered.fam")
+fam.file<-fread(paste(SNPset,".fam",sep=""))
 fam.file$V6<-NULL
 fam.file <- merge(fam.file,trait.data,by.x="V1",by.y="SAM",all.x=T)
-write.table(file="XRQv1_412_239_filtered.fam",fam.file,col.names=F, row.names=F, quote =F)
+write.table(file=paste(SNPset,".fam",sep=""),fam.file,col.names=F, row.names=F, quote =F)
 
 
-system(paste("./gemma -bfile XRQv1_412_239_filtered -k XRQv1_412_239_filtered.cXX.txt -c XRQv1_412_239_filtered.PCA_EV -lmm 1 -outdir ../Tables/Assoc_files/ -o " ,paste(trait,env,sep="_"),sep=""))
+system(paste("./gemma -bfile ",SNPset," -k ",SNPset,".cXX.txt -c ",SNPset,".PCA_EV -lmm 1 -outdir ../Tables/Assoc_files/ -o " ,paste(trait,env,sep="_"),sep=""))
 
   }
 }

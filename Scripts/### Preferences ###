@@ -1,0 +1,5 @@
+###### file names and preferences for the sunflower GWAS pipeline v2 ########
+phenotype file="GEMMAsalt.csv"
+SNP files name="XRQv1_412_239_filtered"
+Multcomp correction value="19918"
+

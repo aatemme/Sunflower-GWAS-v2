@@ -8,9 +8,17 @@ library(ggpubr)
 library(RColorBrewer)
 library(scales)
 
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+    SNPset<-as.character(prefs[2,2])
+    pheno.name<-as.character(prefs[1,2])
+    multcomp<-as.numeric(as.character(prefs[3,2]))
+
+####
+
 
 #### name blocks/snps <- same process as other steps where blocks are named == same names
-      blocks<-fread("Software/XRQv1_412_239_filtered.blocks.det")
+      blocks<-fread(paste("Software/",SNPset,".blocks.det",sep=""))
       
       blocks$Chr_num<- as.integer(gsub("Ha412HOChr","",blocks$CHR))
       blocks<- blocks %>% group_by(Chr_num) %>% mutate(hapID = paste(Chr_num,c(1:length(Chr_num)),sep="_"))
@@ -21,7 +29,7 @@ library(scales)
       rm(snps)
       
       ### qd solution singletons
-      all.snps<-fread("Software/XRQv1_412_239_filtered.map", header=F)
+      all.snps<-fread(paste("Software/",SNPset,".map",sep=""), header=F)
       names(all.snps)[1:4]<-c("chr","rs","V3","ps")
       all.snps$V3<-NULL
       
@@ -70,7 +78,7 @@ blockmap<-plotbase+theme_minimal()+
   # geom_segment(x=blocks$BP1,xend=blocks$BP2,y=0,yend=0,col="black")+
   geom_segment(data=missing.snps,x=missing.snps$BP1, xend=missing.snps$BP2+10000,y=0,yend=0,col="black")+
   # geom_point(data=missing.snps,x=missing.snps$BP1,y=1,col="grey50",size=0.2)+
-  geom_point(data=genemap, x=genemap$pointpos,y=0,col="black",size=0.5)+coord_cartesian(ylim=c(0,1))+
+  geom_point(data=genemap, x=genemap$pointpos,y=0,col="gray50",size=0.5)+coord_cartesian(ylim=c(0,1))+
   facet_wrap(~CHR,scales="free_y",ncol=3,nrow=6,strip.position = "left")+theme(legend.position="none")+
   scale_x_continuous(labels = comma,breaks=c(0,50e6,100e6,150e6,200e6))+
   theme(axis.text.x = element_text(angle=20,hjust=1),

@@ -4,7 +4,14 @@ library(Hmisc)
 library(ggdendro)
 # library(stringi)
 
-pheno.data<-read.csv("Phenotype data/GEMMAsalt.csv")
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
+
+
+pheno.data<-read.csv(paste("Phenotype data/",pheno.name,sep=""))
 
 ##### data in the colocate plot
 

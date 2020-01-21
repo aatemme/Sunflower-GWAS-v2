@@ -3,19 +3,23 @@ library(qqman)
 library(tidyverse)
 library(data.table)
 library(RColorBrewer)
-# library(wesanderson)
 
+#### read in preferences
+prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
+  SNPset<-as.character(prefs[2,2])
+  pheno.name<-as.character(prefs[1,2])
+  multcomp<-as.numeric(as.character(prefs[3,2]))
 
 ###setup the data
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
 traits<-as.character(read.table("traits_to_run.txt")[,1])
-multcomp<-as.numeric(read.table("Scripts/### multcomp correction value ###")[,1])
+
 
 suggthresh<-0.001 ## draw line at "suggestive" SNPs (threshold fraction of snips are above the blue line)
 
 ### easy map to allign the snips to
-snp.map = fread(file="Software/XRQv1_412_239_filtered.map",header= F) ###for easier plotting of snip locations
+snp.map = fread(file=paste("Software/",SNPset,".map",sep=""),header= F) ###for easier plotting of snip locations
 colnames(snp.map)<-c("chr","rs","Chr_num","ps")
 snp.map$Chr_num <- as.integer(gsub("Ha412HOChr","",snp.map$chr))
 
@@ -29,8 +33,8 @@ for (i in 1:length(traits)){
   
   pdf(paste("Plots/Manhattans/",traits[i],"_ManhattanPlot.pdf",sep=""),height=11,width=15)
   
-  if(length(envs)<3){par(mfcol=c(2,1),oma = c(0, 0, 0, 0))}
-              else  {par(mfcol=c(ceiling(length(envs)/2),2),oma = c(0, 0, 0, 0))} ## plot in two columns if more than 2 environments
+  if(length(envs)<3){par(mfcol=c(2,1),oma = c(0, 0, 0, 0))} else
+              {par(mfcol=c(ceiling(length(envs)/2),2),oma = c(0, 0, 0, 0))} ## plot in two columns if more than 2 environments
   
   for (q in 1:length(envs)){
     
