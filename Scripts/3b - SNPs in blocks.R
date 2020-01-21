@@ -39,6 +39,8 @@ suggthresh<-0.001
 
 envs<-as.character(read.table("environments_to_run.txt")[,1])
 traits<-as.character(read.table("traits_to_run.txt")[,1])
+pheno.data<-read.csv(paste("Phenotype data/",pheno.name,sep=""))
+
 
 sig.blocks<-NULL #empty object to merge against
 sug.blocks<-NULL
@@ -52,6 +54,7 @@ for (i in 1:length(traits)){
     
     snips<-fread(paste("Tables/Assoc_files/", paste(traits[i],envs[q],sep="_"), ".assoc.txt", sep=""), header=T)
     
+    trait.range<-abs(diff(range(pheno.data[, paste(traits[i],envs[q],sep="_")],na.rm=T)))
 
     sig.bins<-NULL
     sug.bins<-NULL
@@ -72,7 +75,7 @@ for (i in 1:length(traits)){
       
       sig.bins<-merge(sig.snips,big.list,by.x="rs",by.y="SNP")
       
-      sig.bins$PVE<-(2*(sig.bins$beta^2)*sig.bins$af*(1-sig.bins$af))/((2*(sig.bins$beta^2)*sig.bins$af*(1-sig.bins$af))+((sig.bins$se^2)*(2*239)*sig.bins$af*(1-sig.bins$af)))
+      sig.bins$PVE<-abs(2*sig.bins$beta)/trait.range
       
       sig.bins<-sig.bins %>% group_by(hapID) %>% summarise(NSNP=length(ps),beta=max(beta),min_p=min(p_wald), PVE=max(PVE))
       
@@ -84,7 +87,7 @@ for (i in 1:length(traits)){
     
     
     sug.bins<-merge(sug.snips,big.list,by.x="rs",by.y="SNP")
-    sug.bins$PVE<-(2*(sug.bins$beta^2)*sug.bins$af*(1-sug.bins$af))/((2*(sug.bins$beta^2)*sug.bins$af*(1-sug.bins$af))+(2*(sug.bins$se^2)*(2*239)*sug.bins$af*(1-sug.bins$af)))
+    sug.bins$PVE<-abs(2*sug.bins$beta)/trait.range
     
     sug.bins<-sug.bins %>% group_by(hapID) %>% summarise(NSNP=length(ps),beta=max(beta),min_p=min(p_wald), PVE=max(PVE))
     
