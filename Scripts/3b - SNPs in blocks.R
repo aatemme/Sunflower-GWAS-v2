@@ -52,6 +52,11 @@ for (i in 1:length(traits)){
 
     print(paste(traits[i],envs[q]))
     
+    if (!paste(traits[i],"_",envs[q],".assoc.txt",sep="")%in%dir("Tables/Assoc_files/")) {
+      print("Phenotype does not exist or not run through gemma")
+      next
+    } ### deal with missing association file
+    
     snips<-fread(paste("Tables/Assoc_files/", paste(traits[i],envs[q],sep="_"), ".assoc.txt", sep=""), header=T)
     
     trait.range<-abs(diff(range(pheno.data[, paste(traits[i],envs[q],sep="_")],na.rm=T)))
