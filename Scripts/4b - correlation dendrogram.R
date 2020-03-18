@@ -30,10 +30,15 @@ names(correlate.data)<-traits
 Env.corr<-rcorr(as.matrix(correlate.data),type="pearson")
 
 #### clustering dendrogram to use with collocalization plot
+if (length(traits)>=2) {
 Env.dist<-as.dist(1-Env.corr$r)    
   Env.clust <- hclust(Env.dist, method = "complete", members=NULL)
     Env.dendro<-ggdendrogram(Env.clust,rotate=T,labels=F)+scale_y_reverse()+theme(axis.text.y=element_blank())+scale_x_continuous(limits=c(0.5,length(traits)+0.5),expand=c(0,0))
       Env.label.order<-Env.clust$labels[Env.clust$order]
-
+}
+if (length(traits)==1) {
+  Env.dendro <- ggplot() + theme_void()
+  Env.label.order <- traits
+}
       
   

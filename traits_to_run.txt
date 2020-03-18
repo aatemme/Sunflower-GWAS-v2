@@ -16,8 +16,6 @@ LMF
 Magnesium
 Manganese
 Nitrogen
-Pctflower
-PetMF
 Phosphorus
 PlantWeight
 Potassium
