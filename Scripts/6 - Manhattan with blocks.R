@@ -63,7 +63,8 @@ for (i in 1:length(traits)){
     snips<-fread(paste("Tables/Assoc_files/",paste(traits[i],envs[q],sep="_"),".assoc.txt",sep=""),header=T)
     snips$CHR<- as.integer(gsub("Ha412HOChr","",snips$chr))
     
-    snips<-merge(snips,big.list,by.x="rs",by.y="SNP")
+    snips<-data.table(merge(snips,big.list,by.x="rs",by.y="SNP"))
+    snips$ps <- as.numeric(snips$ps)
     
     trait.blocks<-colocate[colocate$trait_env==paste(traits[i],envs[q],sep="_"),]
     
@@ -80,7 +81,7 @@ for (i in 1:length(traits)){
             mutate(tot=cumsum(chr_len)-chr_len) %>% # Calculate cumulative position of each chromosome
             select(-chr_len)
     
-    chr_cumsum$tot<-chr_cumsum$tot+c((spacer*chr_cumsum$CHR)-spacer)
+  chr_cumsum$tot<-chr_cumsum$tot+c((spacer*chr_cumsum$CHR)-spacer)
     
    snips<- merge(snips, chr_cumsum, by="CHR")
    snips$BPcum<-snips$ps+snips$tot 
