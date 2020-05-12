@@ -9,8 +9,6 @@ This Sunflower-GWAS-2.0 pipeline adds:
 - Gene list per haplotype block
 - Drawing of manhattan plots with haplotype blocks overlay
 
-UPDATE 2019/05/10: Works like a charm. Needs software data from separate location though
-
 ![picture](Overview.jpg)
 
 
@@ -19,11 +17,6 @@ Ongoing improvements:
 - List R libraries needed
 - Make step 0 script that had bits of code to make kinship file, blocks map, etc
 - Write guide
-- Flag genes that have significant SNPs for traits in gene list output
-- PVE per region following Masalia et al 2018
-- Heritability per region
-- Epistatis graph (R2 between regions on different chromosomes (within cromosomes already captured in LD plot))
-
 
 Partial guide language
 - The blocks are generated from the 1.5 million SNPs using plink. This divides up the genome in chunks that are co-inherited (according to some set thresholds). We now have condensed the genome from 1.5 million independent SNPs to ~20K independent chunks/regions/blocks. Now from the GEMMA output we get a list of SNPs and their p-values. Since not all SNPs are independent (as evidenced from the blocking procedure) the cutoff for significance is based on the 20K independent blocks we have.
