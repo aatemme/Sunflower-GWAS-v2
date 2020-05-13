@@ -1,0 +1,17 @@
+Software and datafiles needed in this folder for the GWAS pipeline
+
+- The gemma software
+- Plink software
+- Genome anotation .gff3 file <- to find list of genes per genomic region
+- Datafiles on the SNP set you'll use [snp set name] should be set in prefferences file as well.
+	- [snp set name].bed
+	- [snp set name].bim
+	- [snp set name].blocks.det <-output from haplotype blocking from plink
+	- [snp set name].cXX.txt <-output from gemma kinship matrix calculation
+	- [snp set name].fam
+	- [snp set name].map
+	- [snp set name].PCA_EV <-file with population structure eigenvectors
+	- [snp set name].tfam
+	- [snp set name].tped
+
+(The .bed/.bim and .tfam/tped are basically the same information so this list could certainly be optimized)
