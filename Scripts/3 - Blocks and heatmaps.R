@@ -48,7 +48,7 @@ sig.list$chr <- gsub("Ha412HOChr","",sig.list$SNP)
 sig.list$chr <- as.integer(gsub(":.*","",sig.list$chr))
 sig.list$ps <- as.integer(gsub(".*:","",sig.list$SNP))
 
-sig.list<-sig.list[order(chr,ps),]
+sig.list<-sig.list[order(sig.list$chr,sig.list$ps),]
 
 
 #### add big haplotype block id's
