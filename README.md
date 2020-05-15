@@ -1,6 +1,6 @@
 # Sunflower-GWAS-2.0
 
-This is a R only rewrite and extention of the sunflower GWAS pipeline initiated by Rishi Masalia. (Masalia et al., Plos 2018)
+This is a R only rewrite and extention of the sunflower GWAS pipeline initiated by Rishi Masalia. (Masalia et al., Plos 2018) Please cite https://www.biorxiv.org/content/10.1101/2020.05.12.090837v1 when using this code :)
 
 This Sunflower-GWAS-2.0 pipeline adds:
 - Streamlined folder structure of inputs/outputs/code/software
