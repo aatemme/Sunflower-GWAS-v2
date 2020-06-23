@@ -62,7 +62,11 @@ for (i in 1: length(unique(colocate$chromosome))) {
   
   region.count<-length(levels(chrom.data$region))
   
-  trait.count<-c(NA,NA,NA)
+  trait.count<-c(rep(NA,length(envs)))
+  
+  plotlist <- list()
+  dendrolist <- list()
+  
   
   for (q in 1:length(envs)) {
     plot.data<-chrom.data[chrom.data$env==envs[q],]
@@ -96,17 +100,19 @@ for (i in 1: length(unique(colocate$chromosome))) {
       
       Env.dendro<-Env.dendro+theme(axis.text.x = element_text(angle = 90, vjust = 0.5,hjust=1,size=8))+ggtitle(" ")+theme(plot.margin = unit(c(0.2, 0, 0, 0), "cm"))
       
-      assign(envs[q],plot.colocate)
-      assign(paste(envs[q],"_dendro",sep=""),Env.dendro)
+      plotlist[[q]] <- plot.colocate
+      dendrolist[[q]] <- Env.dendro
+      
       trait.count[q]<-length(Env.label.order)
   }
   
-  trait.count<-trait.count[c(1,2,3)]
-  trait.plot<-plot_grid(water,salt,logdiff,align="v",nrow=3,rel_heights=trait.count+2.5)
-  dendro.plot<-plot_grid(water_dendro,salt_dendro,logdiff_dendro,align="v",nrow=3,rel_heights=trait.count+2.5)
+  # trait.count<-trait.count[c(1,2,3)]
+  
+  trait.plot <- ggarrange(plotlist=plotlist,align="v",nrow=length(envs),heights=trait.count+2.5)
+  dendro.plot <- ggarrange(plotlist=dendrolist,align="v",nrow=length(envs),heights=trait.count+2.5)
   
   chrom.plot<-plot_grid(dendro.plot,trait.plot,ncol=2,rel_widths = c(3,region.count),align="v")
-  ggsave(paste("Plots/Colocalization/colocate-chromosome-",unique(colocate$chromosome)[i],".pdf",sep=""),plot=chrom.plot,width=6,height=9)
+  ggsave(paste("Plots/Colocalization/colocate-chromosome-",unique(colocate$chromosome)[i],".pdf",sep=""),plot=chrom.plot,width=6,height=20)
   
 }
 
