@@ -12,7 +12,7 @@ prefs<-read.table("Scripts/### Preferences ###",header=F,sep="=",skip=1)
 
 ####
 
-colours<-rep(c(brewer.pal(8,"Dark2"))[-7],3)
+colours<-rep(c(brewer.pal(8,"Dark2"))[-7],20)
 
 
 sig.list<-read.table("Tables/Blocks/sigsnips_to_genomeblocks.txt",header=T)
@@ -55,6 +55,8 @@ colocate<- colocate %>% group_by(chromosome) %>% mutate(region_col=colours[as.nu
 #### loops within loops (insert Dune reference here)
 
 for (i in 1:length(traits)){
+  
+  plotlist <- list()
   for (q in 1:length(envs)){
     
     # pdf(paste("Plots/Manhattans/single_env/",traits[i],"-",envs[q],"_ManhattanPlot.pdf",sep=""),height=5.5,width=7.5)
@@ -122,9 +124,13 @@ for (i in 1:length(traits)){
     
     ggsave(paste("Plots/Manhattans_regionhighlight/single_env/",traits[i],"_",envs[q],".png",sep=""),plot, height=4.5,width=7.5, units="in",dpi=300)
   
-    assign(envs[q],plot)
+    plotlist[[q]] <- plot
   }
   
-  comb.plot<-plot_grid(water,logdiff,salt,align="h",nrow=2)
+  if(length(envs)>1) {
+  comb.plot<-ggarrange(plotlist=plotlist,align="h",nrow=2,ncol=ceiling(length(envs)/2))
   ggsave(paste("Plots/Manhattans_regionhighlight/Manhattan-region-",traits[i],".png",sep=""),plot=comb.plot,height=9,width=15, units="in",dpi=300)
-}
+  }
+
+}  
+  
