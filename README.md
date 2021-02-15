@@ -2,6 +2,8 @@
 
 This is a R only rewrite and extention of the sunflower GWAS pipeline initiated by Rishi Masalia. (Masalia et al., Plos 2018) Please cite https://doi.org/10.1104/pp.20.00873 when using this code :)
 
+NOTE: the GEMMA gwas algorithm used in this pipeline runs on Linux
+
 This Sunflower-GWAS-2.0 pipeline adds:
 - Streamlined folder structure of inputs/outputs/code/software
 - GWAS calcuation using GEMMA
